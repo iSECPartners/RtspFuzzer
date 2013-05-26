@@ -210,7 +210,7 @@
       <Block name="ContentLength" ref="RtspHeader">
         <String name="Header" value="Content-Length" token="true" />
         <String name="Value">
-          <!-- removing for peach3 compat <Relation type="size" of="Body" />-->
+          <Relation type="size" of="Body" />
         </String>
       </Block>
     </Block>
@@ -538,7 +538,7 @@
     <Monitor class="WindowsDebugger">
       <Param name="CommandLine" value="##OpenRtspPath##openRTSP.exe rtsp://127.0.0.1:554/abc/def" />
       <Param name="NoCpuKill" value="true" />
-      <Param name="FaultOnEarlyExit" value="true" />
+      <Param name="FaultOnEarlyExit" value="false" />
       <Param name="WaitForExitTimeout" value="0" />
       <Param name="StartOnCall" value="launchProgram" />
     </Monitor>

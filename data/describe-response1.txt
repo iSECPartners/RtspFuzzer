@@ -6,11 +6,11 @@ Cache-Control: must-revalidate
 Date: Thu, 14 Feb 2013 03:40:03 GMT
 Expires: Thu, 14 Feb 2013 03:40:03 GMT
 Last-Modified: Thu, 14 Feb 2013 03:40:03 GMT
-Content-Base: rtsp://v4.cache2.c.youtube.com/CiILENy73wIaGQkIvZG2WagdLhMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp/
-Content-Length: 405
+Content-Base: rtsp://127.0.0.1/CiILENy73wIaGQkIvZG2WagdLhMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp/
+Content-Length: 399
 
 v=0
-o=GoogleStreamer 418101510 1163399577 IN IP4 74.125.209.51
+o=iSECStreamer 418101510 1163399577 IN IP4 127.0.0.1
 s=Video
 c=IN IP4 0.0.0.0
 b=AS:62
