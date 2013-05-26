@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://peachfuzzer.com/2012/Peach c:/peach3/peach.xsd"
+	author="Michael Lynch (iSEC Partners) - mlynch@isecpartners.com"
+    description="A fuzzer for clients implementing the RTSP protocol">
+
+  <!--
+  Fuzzer for RTSP clients.
+  The RTSP protocol is defined as RFC 2326 (http://www.ietf.org/rfc/rfc2326.txt).
+  -->
+  
+  <!-- Import the definition of SDP, which is used in DESCRIBE responses -->
+  <Include ns="sdp" src="file:sdp.xml" />
+
+  <!-- Line containing a header and its value, such as:
+    Last-Modified: Thu, 27 Dec 2012 21:12:18 GMT
+    ^^^^header^^^  ^^^^^^^^^^^^value^^^^^^^^^^^^ -->
+  <DataModel name="RtspHeader">
+    <String name="Header" />
+    <String value=": " token="true" />
+    <String name="Value" />
+    <String value="\r\n" token="true" />
+  </DataModel>
+
+  <!-- Sequence number field, such as:
+      CSeq: 4 -->
+  <DataModel name="CSeqModel" ref="RtspHeader">
+    <String name="Header" value="CSeq" token="true" />
+    <String name="Value">
+      <Hint name="NumericalString" value="true" />
+    </String>
+  </DataModel>
+
+  <!-- RTSP version, such as:
+      RTSP/1.0 -->
+  <DataModel name="RtspVersion">
+    <String value="RTSP" token="true" />
+    <String value="/" type="ascii" token="true" />
+    <String name="RtspMajorVersion" value="1">
+      <Hint name="NumericalString" value="true" />
+    </String>
+    <String value="." type="ascii" token="true" />
+    <String name="RtspMinorVersion" value="0">
+      <Hint name="NumericalString" value="true" />
+    </String>
+  </DataModel>
+
+  <DataModel name="RtspVerb">
+    <Choice name="VerbChoice">
+      <String name="Describe" value="DESCRIBE" token="true" />
+      <String name="GetParameter" value="GET_PARAMETER" token="true" />
+      <String name="SetParameter" value="SET_PARAMETER" token="true" />
+      <String name="Options" value="OPTIONS" token="true" />
+      <String name="Pause" value="PAUSE" token="true" />
+      <String name="Play" value="PLAY" token="true" />
+      <String name="Setup" value="SETUP" token="true" />
+      <String name="Teardown" value="TEARDOWN" token="true" />
+    </Choice>
+  </DataModel>
+
+  <!-- Model for a full RTSP request -->
+  <DataModel name="SmartRtspRequestModel">
+    <!-- The RTSP request line, such as:
+        OPTIONS rtsp://example.com RTSP/1.0 -->
+    <Block name="RequestLine">
+      <Block name="Method" ref="RtspVerb" />
+      <String value=" " type="ascii" token="true" />
+      <String name="RequestUri" />
+      <String value=" " type="ascii" token="true" />
+      <Block name="Version" ref="RtspVersion" />
+      <String value="\r\n" token="true" />
+    </Block>
+
+    <Block name="Headers">
+
+      <Block name="CSeq" ref="CSeqModel" />
+
+      <Block name="UserAgent" ref="RtspHeader" minOccurs="0" maxOccurs="1">
+        <String name="Header" value="User-Agent" token="true" />
+      </Block>
+
+      <Block name="Accept" ref="RtspHeader" minOccurs="0" maxOccurs="1">
+        <String name="Header" value="Accept" token="true" />
+      </Block>
+
+      <Block name="Transport" ref="RtspHeader" minOccurs="0" maxOccurs="1">
+        <String name="Header" value="Transport" token="true" />
+      </Block>
+
+      <Block name="Session" ref="RtspHeader" minOccurs="0" maxOccurs="1">
+        <String name="Header" value="Session" token="true" />
+      </Block>
+
+      <Block name="Range" ref="RtspHeader" minOccurs="0" maxOccurs="1">
+        <String name="Header" value="Range" token="true" />
+      </Block>
+    </Block>
+    
+    <String value="\r\n" token="true" />
+
+    <Blob name="Body" minOccurs="0" maxOccurs="1" />
+  </DataModel>
+
+  <DataModel name="RtspRequestModel">
+    <!-- The RTSP request line, such as:
+        OPTIONS rtsp://example.com RTSP/1.0 -->
+    <Block name="RequestLine">
+      <Block name="Method" ref="RtspVerb" />
+      <String value=" " type="ascii" token="true" />
+      <String name="RequestUri" />
+      <String value=" " type="ascii" token="true" />
+      <Block name="Version" ref="RtspVersion" />
+      <String value="\r\n" token="true" />
+    </Block>
+
+    <String />
+    
+    <Block name="Headers">
+      <Block name="CSeq" ref="CSeqModel" />  
+    </Block>
+    
+    <String />
+  
+  </DataModel>
+  
+
+  <!-- Model for the header lines in an RTSP response. -->
+  <DataModel name="RtspResponseHeaders">
+    <Block name="CSeq" ref="CSeqModel" />
+
+    <!--
+    Server banner string header, such as:
+      Server: ExampleCo RSTP 1.0
+    -->
+    <Block name="Server" ref="RtspHeader" minOccurs="0">
+      <String name="Header" value="Server" token="true" />
+    </Block>
+  </DataModel>
+  
+  <!-- Model for a full RTSP response -->
+  <DataModel name="RtspResponseModel">
+    <!--
+    Status line of an RTSP response, such as:
+      RTSP/1.0 200 OK 
+    -->
+    <Block name="ResponseStatusLine">
+      <Block name="Version" ref="RtspVersion" />
+      <String value=" " token="true" />
+      <String name="ResponseCode">
+        <Hint name="NumericalString" value="true" />
+      </String>
+      <String value=" " token="true" />
+      <String name="ResponseString" />
+      <String value="\r\n" token="true" />
+    </Block>
+
+    <Block name="Headers" ref="RtspResponseHeaders" />
+
+    <String value="\r\n" token="true" />
+  </DataModel>
+
+  <!-- Model for a RTSP response to OPTIONS request -->
+  <DataModel name="OptionsResponseModel" ref="RtspResponseModel">
+    <Block name="Headers" ref="RtspResponseHeaders">
+      <!--
+      Public header line, such as:
+        Public: DESCRIBE, GET_PARAMETER, OPTIONS, PAUSE, PLAY
+        -->
+      <Block name="Public" ref="RtspHeader">
+        <String name="Header" value="Public" />
+        <Block name="Value">
+          <Block ref="RtspVerb" />
+          <Block minOccurs="0" maxOccurs="8">
+            <String value=", " token="true" />
+            <Block ref="RtspVerb" />
+          </Block>
+        </Block>
+      </Block>
+
+      <Block name="ContentLength" ref="RtspHeader" minOccurs="0">
+        <String name="Header" value="Content-Length" />
+        <String name="Value">
+          <Hint name="NumericalString" value="true" />
+        </String>
+      </Block>
+    </Block>
+  </DataModel>
+  
+  <!-- Model for a RTSP response to DESCRIBE request -->
+  <DataModel name="DescribeResponseModel" ref="RtspResponseModel">
+    <Block name="Headers" ref="RtspResponseHeaders">
+      <Block name="ContentType" ref="RtspHeader">
+        <String name="Header" value="Content-Type" token="true" />
+      </Block>
+      <Block name="CacheControl" ref="RtspHeader">
+        <String name="Header" value="Cache-Control" token="true" />
+      </Block>
+      <Block name="Date" ref="RtspHeader">
+        <String name="Header" value="Date" token="true" />
+      </Block>
+      <Block name="Expires" ref="RtspHeader">
+        <String name="Header" value="Expires" token="true" />
+      </Block>
+      <Block name="LastModified" ref="RtspHeader">
+        <String name="Header" value="Last-Modified" token="true" />
+      </Block>
+      <Block name="ContentBase" ref="RtspHeader">
+        <String name="Header" value="Content-Base" token="true" />
+      </Block>
+      <Block name="ContentLength" ref="RtspHeader">
+        <String name="Header" value="Content-Length" token="true" />
+        <String name="Value">
+          <!-- removing for peach3 compat <Relation type="size" of="Body" />-->
+        </String>
+      </Block>
+    </Block>
+    <Block ref="sdp:SessionDescriptionModel" name="Body" />
+  </DataModel>
+
+  <!-- Model for the Session header including an optional timeout, e.g.:
+  
+      Session: 3727873911612972623
+  
+    or
+    
+      Session: 1234e72f;timeout=90 -->
+  <DataModel name="SessionHeaderModel" ref="RtspHeader">
+    <String name="Header" value="Session" />
+    <Block name="Value">
+      <String name="SessionId" />
+      <Block name="TimeoutSection" minOccurs="0">
+        <String value=";" token="true" />
+        <String value="timeout=" token="true" />
+        <String name="TimeoutValue">
+          <Hint name="NumericalString" value="true" />
+        </String>
+      </Block>
+    </Block>
+  </DataModel>
+
+  <DataModel name="TransportHeaderParametersModel">
+    <Choice name="ParametersChoice">
+      <Block name="BroadcastTypeBlock">
+        <Choice>
+          <String name="Unicast" value="unicast" token="true" />
+          <String name="Multicast" value="multicast" token="true" />
+        </Choice>
+      </Block>
+      <Block name="DestinationBlock">
+        <String value="destination" token="true" />
+        <Block name="DestinationAddress" minOccurs="0">
+          <String value="=" token="true" />
+          <Block name="Address" ref="sdp:IPv4AddressModel" />
+        </Block>
+      </Block>
+      <Block name="InterleavedBlock">
+        <String value="interleaved" token="true" />
+        <String value="=" token="true" />
+        <String name="Channel">
+          <Hint name="NumericalString" value="true"/>
+        </String>
+        <Block name="ChannelRange" minOccurs="0">
+          <String value="-" token="true" />
+          <String name="ChannelRangeEnd">
+            <Hint name="NumericalString" value="true"/>
+          </String>
+        </Block>
+      </Block>
+      <Block name="AppendBlock">
+        <String value="append" token="true" />
+      </Block>
+      <Block name="TTLBlock">
+        <String value="TTL" token="true" />
+        <String value="=" token="true" />
+        <String name="TTLValue">
+          <Hint name="NumericalString" value="true" />
+        </String>
+      </Block>
+      <Block name="LayersBlock">
+        <String value="layers" token="true" />
+        <String value="=" token="true" />
+        <String name="LayersValue" length="1">
+          <Hint name="NumericalString" value="true" />
+        </String>
+      </Block>
+      <Block name="PortBlock">
+        <String value="port" token="true" />
+        <String value="=" token="true" />
+        <String name="Port">
+          <Hint name="NumericalString" value="true" />
+        </String>
+        <Block name="PortRange" minOccurs="0">
+          <String value="=" token="true" />
+          <String name="PortRangeEnd">
+            <Hint name="NumericalString" value="true" />
+          </String>
+        </Block>
+      </Block>
+      <Block name="ClientPortBlock">
+        <String value="client_port" token="true" />
+        <String value="=" token="true" />
+        <String name="Port">
+          <Hint name="NumericalString" value="true" />
+        </String>
+        <Block name="PortRange" minOccurs="0">
+          <String value="-" token="true" />
+          <String name="PortRangeEnd">
+            <Hint name="NumericalString" value="true" />
+          </String>
+        </Block>
+      </Block>
+      <Block name="ServerPortBlock">
+        <String value="server_port" token="true" />
+        <String value="=" token="true" />
+        <String name="Port">
+          <Hint name="NumericalString" value="true" />
+        </String>
+        <Block name="PortRange" minOccurs="0">
+          <String value="-" token="true" />
+          <String name="PortRangeEnd">
+            <Hint name="NumericalString" value="true" />
+          </String>
+        </Block>
+      </Block>
+      <Block name="SSRCBlock">
+        <!-- TODO: This block should only occur for unicast -->
+        <String value="ssrc" token="true" />
+        <String value="=" token="true" />
+        <Number name="SSRC" size="32" signed="false" endian="big">
+          <Transformer class="type.IntToHex" />
+        </Number>
+      </Block>
+      <Block name="ModeBlock">
+        <String value="mode" token="true" />
+        <String value="=" token="true" />
+        <Choice>
+          <String value="play" token="true" />
+          <String value="record" token="true" />
+          <String value="PLAY" token="true" />
+          <String value="RECORD" token="true" />
+        </Choice>
+      </Block>
+    </Choice>
+  </DataModel>
+
+  <!-- Model for the Transport header in an RTSP response, such as:
+      Transport: RTP/AVP;unicast;client_port=58526-58527 -->
+  <DataModel name="TransportHeaderModel" ref="RtspHeader">
+    <String name="Header" value="Transport" token="true" />
+    <Block name="Value">
+      <Block name="Transport">
+        <String name="TransportProtocol" value="RTP" />
+        <String value="/" token="true" />
+        <String name="Profile" value="AVP" token="true" /> <!-- TODO: This is not really a token, but is being marked as one to work around a Peach 3 bug-->
+        <Block name="LowerTransportSection" minOccurs="0">
+          <String value="/" token="true" />
+          <Choice name="LowerTransportValue">
+            <String name="LowerTransportTCP" value="TCP" token="true" />
+            <String name="LowerTransportUDP" value="UDP" token="true" />
+          </Choice>
+        </Block>
+        <String name="TransportTerminator" value=";" token="true" />
+      </Block>
+      <Block name="TransportParameters" minOccurs="0" maxOccurs="11">
+        <Block ref="TransportHeaderParametersModel" />
+        <String value=";" token="true" />
+      </Block>
+      <Block ref="TransportHeaderParametersModel" minOccurs="0" />
+    </Block>
+  </DataModel>
+
+  <!-- Model for a RTSP response to SETUP request -->
+  <DataModel name="SetupResponseModel" ref="RtspResponseModel">
+    <Block name="Headers" ref="RtspResponseHeaders">
+      <Block name="Session" ref="SessionHeaderModel" />
+      <Block name="Transport" ref="TransportHeaderModel" />
+      <Block name="CacheControl" ref="RtspHeader">
+        <String name="Header" value="Cache-Control" token="true" />
+      </Block>
+      <Block name="Date" ref="RtspHeader">
+        <String name="Header" value="Date" token="true" />
+      </Block>
+      <Block name="Expires" ref="RtspHeader">
+        <String name="Header" value="Expires" token="true" />
+      </Block>
+      <Block name="LastModified" ref="RtspHeader">
+        <String name="Header" value="Last-Modified" token="true" />
+      </Block>
+    </Block>
+  </DataModel>
+  
+  <!-- Model for a RTSP response to PLAY request -->
+  <DataModel name="PlayResponseModel" ref="RtspResponseModel">
+    <Block name="Headers" ref="RtspResponseHeaders">
+      <Block name="Session" ref="SessionHeaderModel" />
+      <Block name="Range" ref="RtspHeader">
+        <String name="Header" value="Range" token="true" />
+      </Block>
+      <Block name="RtpInfo" ref="RtspHeader">
+        <String name="Header" value="RTP-Info" token="true" />
+      </Block>
+    </Block>
+  </DataModel>
+
+  <DataModel name="DumbModel">
+    <Blob />
+  </DataModel>
+  
+  <StateModel name="RtspStateModel" initialState="StartingState">
+    <State name="StartingState">
+
+      <!-- Start listening asynchronously for incoming connection -->
+      <Action type="start" publisher="RtspServer" />
+      <!--<Action type="start" publisher="HttpServer" />-->
+
+      <Action type="call" method="launchProgram" publisher="Peach.Agent" />
+
+      <Action type="accept" publisher="RtspServer" />
+      
+      <Action type="changeState" ref="RouteRequest" />
+    </State>
+    
+    <State name="RouteRequest">
+      
+      <!-- Wait for client to send data. -->
+      <Action name="ReceiveClientRequest" type="input" publisher="RtspServer">
+        <DataModel ref="RtspRequestModel" />
+      </Action>
+
+      <!--<Action type="changeState" ref="ProcessOptionsRequest" />-->
+
+      <Action type="changeState" ref="ProcessOptionsRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Options'), 'DefaultValue', None)) == 'OPTIONS'" />
+      <Action type="changeState" ref="ProcessDescribeRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Describe'), 'DefaultValue', None)) == 'DESCRIBE'" />
+      <Action type="changeState" ref="ProcessSetupRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Setup'), 'DefaultValue', None)) == 'SETUP'" />
+      <Action type="changeState" ref="ProcessPlayRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Play'), 'DefaultValue', None)) == 'PLAY'" />
+      <Action type="changeState" ref="ProcessPauseRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Pause'), 'DefaultValue', None)) == 'PAUSE'" />
+    </State>
+
+    <State name="ProcessOptionsRequest">
+
+      <!-- Grab the CSeq number from the requst and apply it to the response -->
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      
+      <Action name="SendClientResponse" type="output" publisher="RtspServer">
+        <DataModel ref="OptionsResponseModel" />
+        <Data fileName="data/options-response1.txt" />
+      </Action>
+      
+      <Action type="changeState" ref="RouteRequest" />
+    </State>
+    
+    <State name="ProcessDescribeRequest">
+
+      <!-- Grab the CSeq number from the requst and apply it to the response -->
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="DescribeResponseModel" />
+        <Data fileName="data/describe-response1.txt" />
+      </Action>
+      
+      <Action type="changeState" ref="RouteRequest" />
+    </State>
+
+    <State name="ProcessSetupRequest">
+
+      <!-- Grab the CSeq number from the requst and apply it to the response -->
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="SetupResponseModel" />
+        <Data fileName="data/setup-response3.txt" />
+      </Action>
+
+      <Action type="changeState" ref="RouteRequest" />
+    </State>
+
+    <State name="ProcessPlayRequest">
+
+      <!-- Grab the CSeq number from the requst and apply it to the response -->
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+
+      <!-- Send a fuzzed response to client -->
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="PlayResponseModel" />
+        <Data fileName="data/play-response1.txt" />
+      </Action>
+
+      <!--<Action type="changeState" ref="RouteRequest" />-->
+    </State>
+
+    <State name="ProcessPauseRequest">
+
+      <!-- Grab the CSeq number from the requst and apply it to the response -->
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+
+      <!-- Send a fuzzed response to client -->
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="RtspResponseModel" />
+        <Data fileName="data/generic-ok-response.txt" />
+      </Action>
+
+      <Action type="changeState" ref="RouteRequest" />
+    </State>
+    
+  </StateModel>
+
+  <Agent name="QuickTimeAgent">
+    <Monitor class="PageHeap">
+      <Param name="Executable" value="QuickTimePlayer.exe" />
+    </Monitor>
+    <Monitor class="WindowsDebugger">
+      <Param name="CommandLine" value="##QuickTimePath##QuickTimePlayer.exe rtsp://127.0.0.1/foo/bar.mp4" />
+      <Param name="NoCpuKill" value="true" />
+      <Param name="FaultOnEarlyExit" value="true" />
+      <Param name="WaitForExitTimeout" value="0" />
+      <Param name="StartOnCall" value="launchProgram" />
+    </Monitor>
+  </Agent>
+
+  <Agent name="VlcAgent">
+    <Monitor class="PageHeap">
+      <Param name="Executable" value="vlc.exe" />
+    </Monitor>
+    <Monitor class="WindowsDebugger">
+      <Param name="CommandLine" value="##VlcPath##vlc.exe rtsp://127.0.0.1:554/foo/bar.mp4" />
+      <Param name="NoCpuKill" value="true" />
+      <Param name="FaultOnEarlyExit" value="true" />
+      <Param name="WaitForExitTimeout" value="0" />
+      <Param name="StartOnCall" value="launchProgram" />
+    </Monitor>
+  </Agent>
+
+  <Agent name="OpenRtspAgent">
+    <Monitor class="PageHeap">
+      <Param name="Executable" value="openRTSP.exe" />
+    </Monitor>
+    <Monitor class="WindowsDebugger">
+      <Param name="CommandLine" value="##OpenRtspPath##openRTSP.exe rtsp://127.0.0.1:554/abc/def" />
+      <Param name="NoCpuKill" value="true" />
+      <Param name="FaultOnEarlyExit" value="true" />
+      <Param name="WaitForExitTimeout" value="0" />
+      <Param name="StartOnCall" value="launchProgram" />
+    </Monitor>
+  </Agent>
+
+  <Test name="QuickTimeTest">
+    <Agent ref="QuickTimeAgent"/>
+    <StateModel ref="RtspStateModel" />
+
+    <Publisher name="RtspServer" class="TcpListener">
+      <Param name="Interface" value="127.0.0.1" />
+      <Param name="Port" value="554" />
+      <!-- Accept timeout is very long because it needs to wait for the program under test to launch, which can take
+      minutes on slow machines. -->
+      <Param name="AcceptTimeout" value="300000" />
+      <Param name="Timeout" value="500" />
+    </Publisher>
+
+    <Logger class="logger.Filesystem">
+      <Param name="Path" value="logs" />
+    </Logger>
+  </Test>
+
+  <Test name="VlcTest">
+    <Agent ref="VlcAgent"/>
+    <StateModel ref="RtspStateModel" />
+
+    <Publisher name="RtspServer" class="TcpListener">
+      <Param name="Interface" value="127.0.0.1" />
+      <Param name="Port" value="554" />
+      <!-- Accept timeout is very long because it needs to wait for the program under test to launch, which can take
+      minutes on slow machines. -->
+      <Param name="AcceptTimeout" value="300000" />
+      <Param name="Timeout" value="500" />
+    </Publisher>
+
+    <Logger class="logger.Filesystem">
+      <Param name="Path" value="logs" />
+    </Logger>
+  </Test>
+
+  <Test name="OpenRtspTest">
+    <Agent ref="OpenRtspAgent"/>
+    <StateModel ref="RtspStateModel" />
+
+    <Publisher name="RtspServer" class="TcpListener">
+      <Param name="Interface" value="127.0.0.1" />
+      <Param name="Port" value="554" />
+      <Param name="AcceptTimeout" value="2000" />
+      <Param name="Timeout" value="500" />
+    </Publisher>
+
+    <Logger class="logger.Filesystem">
+      <Param name="Path" value="logs" />
+    </Logger>
+  </Test>
+  
+</Peach>

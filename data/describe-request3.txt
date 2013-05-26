@@ -1,0 +1,10 @@
+DESCRIBE rtsp://127.0.0.1:554/foo/bar.mp4 RTSP/1.0
+User-Agent: WMPlayer/12.0.7601.17514 guid/3300AD50-2C39-46C0-AE0A-A0696C241046
+Accept: application/sdp
+Accept-Charset: UTF-8, *;q=0.1
+Cookie: s_fid=28FC864464B64F22-3E6216B5F7E52B53
+X-Accept-Authentication: Negotiate, NTLM, Digest, Basic
+Accept-Language: en-US, *;q=0.1
+CSeq: 1
+Supported: com.microsoft.wm.srvppair, com.microsoft.wm.sswitch, com.microsoft.wm.eosmsg, com.microsoft.wm.predstrm, com.microsoft.wm.startupprofile
+

@@ -1,0 +1,6 @@
+GET /CjYLENy73wIaLQneFVyCMg3-sBMYDSANFEIJbXYtZ29vZ2xlSARSBXdhdGNoYJXP7NfDk9-tUAw=/0/0/0/video.3gp HTTP/1.0
+User-Agent: QuickTime/7.7.3 (qtver=7.7.3;os=Windows NT 6.1Service Pack 1)
+x-sessioncookie: 1cwum/BIAADmPA4CA4AAAA
+Accept: application/x-rtsp-tunnelled
+Pragma: no-cache
+Cache-Control: no-cache

@@ -1,0 +1,1 @@
+Transport: RTP/AVP;unicast;client_port=58526-58527;server_port=10580-10581;ssrc=13D0307D;mode=play

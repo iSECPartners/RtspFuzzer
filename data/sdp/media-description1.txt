@@ -1,0 +1,7 @@
+m=video 0 RTP/AVP 98
+b=AS:50
+a=rtpmap:98 H263-2000/90000
+a=control:trackID=0
+a=cliprect:0,0,144,176
+a=framesize:98 176-144
+a=fmtp:98 profile=0;level=10

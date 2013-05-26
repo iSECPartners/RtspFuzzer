@@ -1,0 +1,7 @@
+DESCRIBE rtsp://127.0.0.1:554/foo/bar.mp4 RTSP/1.0
+CSeq: 1
+Accept: application/sdp
+Bandwidth: 512000
+Accept-Language: en-US
+User-Agent: QuickTime/7.7.3 (qtver=7.7.3;os=Windows NT 6.1Service Pack 1)
+

@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://peachfuzzer.com/2012/Peach c:/peach3/peach.xsd"
+	author="Michael Lynch (iSEC Partners) - mlynch@isecpartners.com">
+  
+  <!--
+  Definition of the SDP protocol
+  The SDP protocol is defined by RFC 2327 (http://www.ietf.org/rfc/rfc2327.txt) and 
+  RFC 4566 (http://tools.ietf.org/html/rfc4566).
+  -->
+
+  <Import import="re" />
+
+  <DataModel name="SdpLine">
+    <String name="Type" length="1" type="ascii" />
+    <String value="=" token="true" />
+    <String name="Value" type="utf8" />
+    <String value="\r\n" token="true" />
+  </DataModel>
+
+  <!-- A property attribute line, which takes the form:
+  
+    a=<attribute>
+  
+  such as:
+  
+    a=recvonly -->
+  <DataModel name="AttributeLine" ref="SdpLine">
+    <String name="Type" length="1" type="ascii" value="a" token="true" />
+  </DataModel>
+
+  <DataModel name="TimeUnit">
+    <Choice>
+      <String name="Days" value="d" token="true" />
+      <String name="Hours" value="h" token="true" />
+      <String name="Minutes" value="m" token="true" />
+      <String name="Seconds" value="s" token="true" />
+    </Choice>
+  </DataModel>
+
+  <!-- A time string with optional unit suffix, e.g.:
+   7d
+   4h
+   35s
+   604800
+   -->
+  <DataModel name="TimeString">
+    <String name="Value">
+      <Hint name="NumericalString" value="true" />
+    </String>
+    <Block name="Units" ref="TimeUnit" minOccurs="0" />
+  </DataModel>
+    
+  <!-- Start and stop time, which takes the form of:
+    
+      t=<start time> <stop time>
+      
+    e.g.
+      
+      t=2873397496 2873404696 -->
+  <DataModel name="TimingInfoModel" ref="SdpLine">
+    <String name="Type" value="t" token="true" />
+    <Block name="Value">
+      <String name="StartTimeValue">
+        <Hint name="NumericalString" value="true" />
+      </String>
+      <String value=" " token="true" />
+      <String name="EndTimeValue">
+        <Hint name="NumericalString" value="true" />
+      </String>
+    </Block>
+  </DataModel>
+
+  <!-- Repeat time, which takes the form of:
+    
+      r=<repeat interval> <active duration> <offsets from start-time>
+      
+    e.g.
+      
+      r=7d 1h 0 25h
+        
+    Would indicate two recurring sessions every week for 1 hour, the first at offset 0,
+    the second 25 hours later. -->
+  <DataModel name="RepeatTimeModel" ref="SdpLine">
+    <String name="Type" value="r" token="true" />
+    <Block name="Value">
+      <Block name="RepeatInterval" ref="TimeString" />
+      <String value=" " token="true" />
+      <Block name="ActiveDuration" ref="TimeString" />
+      <Block name="Offsets" minOccurs="1">
+        <String value=" " token="true" />
+        <Block ref="TimeString" />
+      </Block>
+    </Block>
+  </DataModel>
+
+  <!-- An IPv4 address, e.g.:
+  
+    192.168.1.1 -->
+  <!-- TODO: Go back to more precise number format if possible (specifying 8-bit numbers 
+   that get converted to string representations rather than just strings). -->
+  <DataModel name="IPv4AddressModel">
+    <String name="Octet1" constraint="re.search('^[0-9]{1,3}$', value) != None" />
+    <String value="." token="true" />
+    <String name="Octet2" constraint="re.search('^[0-9]{1,3}$', value) != None" />
+    <String value="." token="true" />
+    <String name="Octet3" constraint="re.search('^[0-9]{1,3}$', value) != None" />
+    <String value="." token="true" />
+    <String name="Octet4" constraint="re.search('^[0-9]{1,3}$', value) != None" />
+  </DataModel>
+
+  <Data name="SampleIPv4Address" DataModel="IPv4AddressModel">
+    <Field name="Octet1" value="192" />
+    <Field name="Octet2" value="168" />
+    <Field name="Octet3" value="1" />
+    <Field name="Octet4" value="1" />
+  </Data>
+
+  <DataModel name="IPv6AddressModel">
+    <!-- TODO: This is lazily defined, need to corect for all variants of IPv6 address representations -->
+    <String name="OctetGroup1" />
+    <String value=":" token="true" />
+    <String name="OctetGroup2" />
+    <String value=":" token="true" />
+    <String name="OctetGroup3" />
+    <String value=":" token="true" />
+    <String name="OctetGroup4" />
+    <String value=":" token="true" />
+    <String name="OctetGroup5" />
+    <String value=":" token="true" />
+    <String name="OctetGroup6" />
+    <String value=":" token="true" />
+    <String name="OctetGroup7" />
+    <String value=":" token="true" />
+    <String name="OctetGroup8" />
+  </DataModel>
+
+  <DataModel name="MediaDescriptionLineModel" ref="SdpLine">
+    <String name="Type" value="m" token="true" />
+
+    <Block name="Value">
+      <Choice name="MediaType">
+        <String value="audio" token="true" />
+        <String value="video" token="true" />
+        <String value="text" token="true" />
+        <String value="application" token="true" />
+        <String value="message" token="true" />
+      </Choice>
+
+      <String value=" " token="true" />
+
+      <!-- Specifies the port / ports. Can be a simple number, e.g.:
+    
+        49170
+      
+          or include an optional number of contiguous ports, e.g.:
+        
+         49170/2 -->
+      <Block name="Port">
+        <String name="PortNumber" constraint="value.find(' ') == -1">
+          <Hint name="NumericalString" value="true" />
+        </String>
+        <!--
+        TODO: There is an optional suffix defined in the spec, but it's causing parsing to
+        fail so we're commenting it out for now.
+        
+        <Block name="Suffix" minOccurs="0">
+          <String value="/" token="true" />
+          <String name="NumberOfPorts">
+            <Hint name="NumericalString" value="true" />
+          </String>
+        </Block>-->
+      </Block>
+
+      <String value=" " token="true" />
+
+      <Choice name="TransportProtocol">
+        <String value="udp" token="true" />
+        <String value="RTP/AVP" token="true" />
+        <String value="RTP/SAVP" token="true" />
+      </Choice>
+
+      <String value=" " token="true" />
+
+      <!-- TODO: Verify this. Seems like it's a bit more complicated than just a number. -->
+      <String name="MediaFormat">
+        <Hint name="NumericalString" value="true" />
+      </String>
+    </Block>
+  </DataModel>
+
+  <!-- Set of attributes/properties to describe a piece of media -->
+  <DataModel name="MediaDescriptionModel">
+    <Block name="MediaName" ref="MediaDescriptionLineModel" />
+    <Block name="MediaTitle" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="i" token="true" />
+    </Block>
+    <Block name="ConnectionInfo" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="c" token="true" />
+    </Block>
+    <Block name="BandwidthInfo" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="b" token="true" />
+    </Block>
+    <Block name="EncryptionKey" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="k" token="true" />
+    </Block>
+    <Block name="MediaAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="99" />
+  </DataModel>
+
+  <DataModel name="DomainNameModel">
+    <String name="Host" />
+    <Block name="Domains" minOccurs="0" maxOccurs="99">
+      <String value="." token="true" />
+      <String name="Domain" />
+    </Block>
+  </DataModel>
+
+  <DataModel name="OriginatorSessionIdModel" ref="SdpLine">
+    <String name="Type" value="o" token="true" />
+    <Block name="Value">
+      <String name="Username" />
+      <String value=" " token="true" />
+      <String name="SessionId">
+        <Hint name="NumericString" value="true" />
+      </String>
+      <String value=" " token="true" />
+      <String name="SessionVersion">
+        <Hint name="NumericString" value="true" />
+      </String>
+      <String value=" " token="true" />
+      <String name="NetworkType" value="IN" />
+      <String value=" " token="true" />
+      <Choice name="AddressType">
+        <String name="IPv4" value="IP4" token="true" />
+        <String name="IPv6" value="IP6" token="true" />
+      </Choice>
+      <String value=" " token="true" />
+      <Choice name="UnicastAddress">
+        <Block name="IPv4Address" ref="IPv4AddressModel" />
+        <Block name="IPv6Address" ref="IPv6AddressModel" />
+        <Block name="DomainName" ref="DomainNameModel" />
+      </Choice>
+    </Block>
+  </DataModel>
+
+  <DataModel name="ConnectionInfoModel" ref="SdpLine">
+    <String name="Type" value="c" token="true" />
+    <Block name="Value">
+      <String name="NetworkType" value="IN" token="true" />
+      <String value=" " token="true" />
+      <Choice name="AddressType">
+        <String name="IPv4" value="IP4" token="true" />
+        <String name="IPv6" value="IP6" token="true" />
+      </Choice>
+      <String value=" " token="true" />
+      <Choice name="ConnectionAddress">
+        <Block name="IPv4Address" ref="IPv4AddressModel" />
+        <Block name="IPv6Address" ref="IPv6AddressModel" />
+      </Choice>
+      <!--
+      TODO: The following lines are part of the protocol, but cause data cracking to fail.
+        Adding an optional field after an IPv4 address causes it to not crack the IPv4 address.
+      
+      <Block name="TTL" minOccurs="0">
+        <String value="/" token="true" />
+        <String name="TTLValue">
+          <Hint name="NumericString" value="true" />
+        </String>
+      </Block>-->
+      <!--<Block name="NumberOfAddresses" minOccurs="0">
+        <String value="/" token="true" />
+        <String name="NumberOfAddressesValue">
+          <Hint name="NumericString" value="true" />
+        </String>
+      </Block>-->
+    </Block>
+  </DataModel>
+
+  <DataModel name="SessionDescriptionModel">
+    <Block name="ProtocolVersion" ref="SdpLine">
+      <String name="Type" value="v" token="true" />
+      <String name="Value" value="0">
+        <Hint name="NumericalString" value="true" />
+      </String>
+    </Block>
+
+    <Block name="OriginatorSessionId" ref="OriginatorSessionIdModel" />
+    
+    <Block name="SessionName" ref="SdpLine">
+      <String name="Type" value="s" token="true" />
+    </Block>
+
+    <Block name="SessionInfo" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="i" token="true" />
+    </Block>
+
+    <!-- Specifies an email address, e.g.:
+    
+      e=j.doe@example.com (Jane Doe) -->
+    <Block name="EmailAddress" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="e" token="true" />
+    </Block>
+
+    <!-- Specifies a phone number, e.g.:
+    
+      p=+1 617 555-6011
+      
+      Note that the formatting is a suggestion and is not mandated by the spec. -->
+    <Block name="PhoneNumber" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="p" token="true" />
+    </Block>
+
+    <Block name="ConnectionInfo" ref="ConnectionInfoModel" minOccurs="0" />
+    
+    <!-- Specifies the bandwidth information with a prefix giving bandwidth type and
+    a numeric value specifying bandwidth, e.g.:
+    
+      b=CT:128 -->
+    <Block name="BandwidthInfo" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="b" token="true" />
+      <Block name="Value">
+        <Choice name="ConnectionType">
+          <String name="ConferenceTotal" value="CT" token="true" />
+          <String name="ApplicationSpecific" value="AS" token="true" />
+        </Choice>
+        <String value=":" token="true" />
+        <String name="Bandwidth" />
+      </Block>
+    </Block>
+
+    <Block name="TimingInfo" ref="TimingInfoModel" />
+
+    <Block name="RepeatTime" ref="RepeatTimeModel" minOccurs="0" />
+
+    <Block name="TimeZoneAdjustments" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="z" token="true" />
+    </Block>
+
+    <Block name="EncryptionKey" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="k" token="true" />
+    </Block>
+
+    <Block name="SessionAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="99" />
+
+    <Block name="MediaDescription" ref="MediaDescriptionModel" minOccurs="0" maxOccurs="99" />
+    
+  </DataModel>
+  
+  <StateModel name="RtspStateModel" initialState="StartingState">
+    <State name="StartingState">
+      <Action type="output" publisher="consolePublisher">
+        <DataModel ref="SessionDescriptionModel" />
+      </Action>
+    </State>
+  </StateModel>
+  
+  <Test name="Default">
+    <StateModel ref="RtspStateModel" />
+
+    <Publisher name="consolePublisher" class="stdout.Stdout" />
+  </Test>
+
+</Peach>

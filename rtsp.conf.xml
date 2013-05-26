@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PitDefines>
+	<Configuration platform="Windows">
+		<PitDefine key="VlcPath" value="C:\vlc-build\" />
+		<PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
+		<PitDefine key="OpenRtspPath" value="D:\live\testProgs\" />
+	</Configuration>
+</PitDefines>
