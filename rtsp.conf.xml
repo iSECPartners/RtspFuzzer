@@ -2,8 +2,8 @@
 
 <PitDefines>
 	<Configuration platform="Windows">
-		<PitDefine key="VlcPath" value="C:\vlc-build\" />
+		<PitDefine key="VlcPath" value="C:\Program Files (x86)\VideoLAN\VLC\" />
 		<PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
-		<PitDefine key="OpenRtspPath" value="D:\live\testProgs\" />
+		<PitDefine key="OpenRtspPath" value="C:\OpenRtsp\testProgs\" />
 	</Configuration>
 </PitDefines>
