@@ -187,6 +187,34 @@
     </Block>
   </DataModel>
 
+  <DataModel name="EncryptionKeyModel" ref="SdpLine">
+    <String name="Type" value="k" token="true" />
+    <Block name="Value">
+      <Choice>
+        <Block name="ClearKey">
+          <String value="clear" token="true" />
+          <String value=":" token="true" />
+          <String name="EncryptionKey" />
+        </Block>
+        <Block name="Base64EncodedKey">
+          <String value="base64" token="true" />
+          <String value=":" token="true" />
+          <String name="EncryptionKey">
+            <Transformer class="Base64Encode" />
+          </String>
+        </Block>
+        <Block name="RemoteKey">
+          <String value="uri" token="true" />
+          <String value=":" token="true" />
+          <String name="EncryptionKeyUri" />
+        </Block>
+        <Block name="PromptForKey">
+          <String value="prompt" token="true" />
+        </Block>
+      </Choice>
+    </Block>
+  </DataModel>
+
   <!-- Set of attributes/properties to describe a piece of media -->
   <DataModel name="MediaDescriptionModel">
     <Block name="MediaName" ref="MediaDescriptionLineModel" />
@@ -198,10 +226,13 @@
     </Block>
     <Block name="BandwidthInfo" ref="SdpLine" minOccurs="0" maxOccurs="1">
       <String name="Type" value="b" token="true" />
+      <Block name="Value">
+        <String name="BandwidthType" />
+        <String value=":" token="true" />
+        <String name="Bandwidth" />
+      </Block>
     </Block>
-    <Block name="EncryptionKey" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="k" token="true" />
-    </Block>
+    <Block name="EncryptionKey" ref="EncryptionKeyModel" minOccurs="0" maxOccurs="1" />
     <Block name="MediaAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="-1" />
   </DataModel>
 
