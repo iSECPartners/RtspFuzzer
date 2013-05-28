@@ -132,7 +132,7 @@
     Server banner string header, such as:
       Server: ExampleCo RSTP 1.0
     -->
-    <Block name="Server" ref="RtspHeader" minOccurs="0">
+    <Block name="Server" ref="RtspHeader" minOccurs="0" maxOccurs="1">
       <String name="Header" value="Server" token="true" />
     </Block>
   </DataModel>
@@ -177,7 +177,7 @@
         </Block>
       </Block>
 
-      <Block name="ContentLength" ref="RtspHeader" minOccurs="0">
+      <Block name="ContentLength" ref="RtspHeader" minOccurs="0" maxOccurs="1">
         <String name="Header" value="Content-Length" />
         <String name="Value">
           <Hint name="NumericalString" value="true" />
@@ -228,7 +228,7 @@
     <String name="Header" value="Session" />
     <Block name="Value">
       <String name="SessionId" />
-      <Block name="TimeoutSection" minOccurs="0">
+      <Block name="TimeoutSection" minOccurs="0" maxOccurs="1">
         <String value=";" token="true" />
         <String value="timeout=" token="true" />
         <String name="TimeoutValue">
@@ -248,7 +248,7 @@
       </Block>
       <Block name="DestinationBlock">
         <String value="destination" token="true" />
-        <Block name="DestinationAddress" minOccurs="0">
+        <Block name="DestinationAddress" minOccurs="0" maxOccurs="1">
           <String value="=" token="true" />
           <Block name="Address" ref="sdp:IPv4AddressModel" />
         </Block>
@@ -259,7 +259,7 @@
         <String name="Channel">
           <Hint name="NumericalString" value="true"/>
         </String>
-        <Block name="ChannelRange" minOccurs="0">
+        <Block name="ChannelRange" minOccurs="0" maxOccurs="1">
           <String value="-" token="true" />
           <String name="ChannelRangeEnd">
             <Hint name="NumericalString" value="true"/>
@@ -289,7 +289,7 @@
         <String name="Port">
           <Hint name="NumericalString" value="true" />
         </String>
-        <Block name="PortRange" minOccurs="0">
+        <Block name="PortRange" minOccurs="0" maxOccurs="1">
           <String value="=" token="true" />
           <String name="PortRangeEnd">
             <Hint name="NumericalString" value="true" />
@@ -302,7 +302,7 @@
         <String name="Port">
           <Hint name="NumericalString" value="true" />
         </String>
-        <Block name="PortRange" minOccurs="0">
+        <Block name="PortRange" minOccurs="0" maxOccurs="1">
           <String value="-" token="true" />
           <String name="PortRangeEnd">
             <Hint name="NumericalString" value="true" />
@@ -315,7 +315,7 @@
         <String name="Port">
           <Hint name="NumericalString" value="true" />
         </String>
-        <Block name="PortRange" minOccurs="0">
+        <Block name="PortRange" minOccurs="0" maxOccurs="1">
           <String value="-" token="true" />
           <String name="PortRangeEnd">
             <Hint name="NumericalString" value="true" />
@@ -352,7 +352,7 @@
         <String name="TransportProtocol" value="RTP" />
         <String value="/" token="true" />
         <String name="Profile" value="AVP" token="true" /> <!-- TODO: This is not really a token, but is being marked as one to work around a Peach 3 bug-->
-        <Block name="LowerTransportSection" minOccurs="0">
+        <Block name="LowerTransportSection" minOccurs="0" maxOccurs="1">
           <String value="/" token="true" />
           <Choice name="LowerTransportValue">
             <String name="LowerTransportTCP" value="TCP" token="true" />
@@ -365,7 +365,7 @@
         <Block ref="TransportHeaderParametersModel" />
         <String value=";" token="true" />
       </Block>
-      <Block ref="TransportHeaderParametersModel" minOccurs="0" />
+      <Block ref="TransportHeaderParametersModel" minOccurs="0" maxOccurs="1" />
     </Block>
   </DataModel>
 
