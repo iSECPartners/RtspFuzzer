@@ -253,6 +253,13 @@
           <Block name="Address" ref="sdp:IPv4AddressModel" />
         </Block>
       </Block>
+      <Block name="SourceBlock">
+        <String value="source" token="true" />
+        <Block name="SourceAddress" minOccurs="0" maxOccurs="1">
+          <String value="=" token="true" />
+          <Block name="Address" ref="sdp:IPv4AddressModel" />
+        </Block>
+      </Block>
       <Block name="InterleavedBlock">
         <String value="interleaved" token="true" />
         <String value="=" token="true" />
@@ -270,7 +277,7 @@
         <String value="append" token="true" />
       </Block>
       <Block name="TTLBlock">
-        <String value="TTL" token="true" />
+        <String value="ttl" token="true" />
         <String value="=" token="true" />
         <String name="TTLValue">
           <Hint name="NumericalString" value="true" />
@@ -323,22 +330,21 @@
         </Block>
       </Block>
       <Block name="SSRCBlock">
-        <!-- TODO: This block should only occur for unicast -->
         <String value="ssrc" token="true" />
         <String value="=" token="true" />
-        <Number name="SSRC" size="32" signed="false" endian="big">
-          <Transformer class="type.IntToHex" />
-        </Number>
+        <String name="SSRC" constraint="re.search('^[0-9a-fA-F]{8}$', value) != None" />
       </Block>
       <Block name="ModeBlock">
         <String value="mode" token="true" />
         <String value="=" token="true" />
+        <String value="&quot;" token="true" />
         <Choice>
           <String value="play" token="true" />
           <String value="record" token="true" />
           <String value="PLAY" token="true" />
           <String value="RECORD" token="true" />
         </Choice>
+        <String value="&quot;" token="true" />
       </Block>
     </Choice>
   </DataModel>
