@@ -351,7 +351,7 @@
       <Block name="Transport">
         <String name="TransportProtocol" value="RTP" />
         <String value="/" token="true" />
-        <String name="Profile" value="AVP" token="true" /> <!-- TODO: This is not really a token, but is being marked as one to work around a Peach 3 bug-->
+        <String name="Profile" value="AVP" />
         <Block name="LowerTransportSection" minOccurs="0" maxOccurs="1">
           <String value="/" token="true" />
           <Choice name="LowerTransportValue">
