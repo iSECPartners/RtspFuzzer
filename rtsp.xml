@@ -417,7 +417,6 @@
 
       <!-- Start listening asynchronously for incoming connection -->
       <Action type="start" publisher="RtspServer" />
-      <!--<Action type="start" publisher="HttpServer" />-->
 
       <Action type="call" method="launchProgram" publisher="Peach.Agent" />
 
@@ -432,8 +431,6 @@
       <Action name="ReceiveClientRequest" type="input" publisher="RtspServer">
         <DataModel ref="RtspRequestModel" />
       </Action>
-
-      <!--<Action type="changeState" ref="ProcessOptionsRequest" />-->
 
       <Action type="changeState" ref="ProcessOptionsRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Options'), 'DefaultValue', None)) == 'OPTIONS'" />
       <Action type="changeState" ref="ProcessDescribeRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Describe'), 'DefaultValue', None)) == 'DESCRIBE'" />
@@ -492,7 +489,7 @@
         <Data fileName="data/play-response1.txt" />
       </Action>
 
-      <!--<Action type="changeState" ref="RouteRequest" />-->
+      <Action type="call" method="exitProgram" publisher="Peach.Agent" />
     </State>
 
     <State name="ProcessPauseRequest">
@@ -547,6 +544,7 @@
       <Param name="FaultOnEarlyExit" value="false" />
       <Param name="WaitForExitTimeout" value="0" />
       <Param name="StartOnCall" value="launchProgram" />
+      <Param name="ExitOnCall" value="exitProgram" />
     </Monitor>
   </Agent>
 
