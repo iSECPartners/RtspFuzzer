@@ -258,19 +258,19 @@
       <!--
       TODO: The following lines are part of the protocol, but cause data cracking to fail.
         Adding an optional field after an IPv4 address causes it to not crack the IPv4 address.
-      
+      -->
       <Block name="TTL" minOccurs="0" maxOccurs="1">
         <String value="/" token="true" />
         <String name="TTLValue">
           <Hint name="NumericString" value="true" />
         </String>
-      </Block>-->
-      <!--<Block name="NumberOfAddresses" minOccurs="0" maxOccurs="1">
+      </Block>
+      <Block name="NumberOfAddresses" minOccurs="0" maxOccurs="1">
         <String value="/" token="true" />
         <String name="NumberOfAddressesValue">
           <Hint name="NumericString" value="true" />
         </String>
-      </Block>-->
+      </Block>
     </Block>
   </DataModel>
 
