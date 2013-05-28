@@ -292,6 +292,10 @@
       <String name="Type" value="i" token="true" />
     </Block>
 
+    <Block name="SessionDescriptionUri" ref="SdpLine" minOccurs="0">
+      <String name="Type" value="u" token="true" />
+    </Block>
+
     <!-- Specifies an email address, e.g.:
     
       e=j.doe@example.com (Jane Doe) -->
