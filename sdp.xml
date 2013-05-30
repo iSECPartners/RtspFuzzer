@@ -37,18 +37,39 @@
       <String name="Seconds" value="s" token="true" />
     </Choice>
   </DataModel>
+  
+  <DataModel name="BaseTimeString">
+    <String name="Value" />
+    <String name="Units" length="0" />
+  </DataModel>
+
 
   <!-- A time string with optional unit suffix, e.g.:
    7d
    4h
    35s
    604800
+   
+   N.B.: The weird format of the DataModel is to work around a parsing limitation
+   in Peach. See here for more details:
+   http://forums.peachfuzzer.com/showthread.php?112-Parsing-Adjacent-Strings&p=530&viewfull=1#post530
    -->
   <DataModel name="TimeString">
-    <String name="Value">
-      <Hint name="NumericalString" value="true" />
-    </String>
-    <Block name="Units" ref="TimeUnit" minOccurs="0" maxOccurs="1" />
+    <Choice>
+      <Block ref="BaseTimeString">
+        <String name="Units" value="d" token="true" />
+      </Block>
+      <Block ref="BaseTimeString">
+        <String name="Units" value="h" token="true" />
+      </Block>
+      <Block ref="BaseTimeString">
+        <String name="Units" value="m" token="true" />
+      </Block>
+      <Block ref="BaseTimeString">
+        <String name="Units" value="s" token="true" />
+      </Block>
+      <Block ref="BaseTimeString"/>
+    </Choice>
   </DataModel>
     
   <!-- Start and stop time, which takes the form of:
@@ -301,6 +322,21 @@
     </Block>
   </DataModel>
 
+  <DataModel name="TimeZoneAdjustmentsModel" ref="SdpLine">
+    <String name="Type" value="z" token="true" />
+    <Block name="Value">
+      <Block name="AdjustmentOffset" minOccurs="1" maxOccurs="-1">
+        <String name="AdjustmentTime" />
+        <String value=" " token="true" />
+        <Choice minOccurs="0" maxOccurs="1">
+          <String value="-" token="true" />
+          <String value="+" token="true" />
+        </Choice>
+        <Block ref="TimeString" />
+      </Block>
+    </Block>
+  </DataModel>
+
   <DataModel name="SessionDescriptionModel">
     <Block name="ProtocolVersion" ref="SdpLine">
       <String name="Type" value="v" token="true" />
@@ -361,13 +397,9 @@
 
     <Block name="RepeatTime" ref="RepeatTimeModel" minOccurs="0" maxOccurs="1" />
 
-    <Block name="TimeZoneAdjustments" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="z" token="true" />
-    </Block>
+    <Block name="TimeZoneAdjustments" ref="TimeZoneAdjustmentsModel" minOccurs="0" maxOccurs="1" />
 
-    <Block name="EncryptionKey" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="k" token="true" />
-    </Block>
+    <Block name="EncryptionKey" ref="EncryptionKeyModel" minOccurs="0" maxOccurs="1" />
 
     <Block name="SessionAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="-1" />
 
