@@ -407,8 +407,23 @@
       </Block>
       <Block name="Scale" ref="RtspHeader">
         <String name="Header" value="Scale" token="true" />
+        
+        <!-- Defines a positive or negative decimal value, e.g. "-1.5" -->
         <Block name="Value">
           <String value="-" token="true" minOccurs="0" maxOccurs="1" />
+          <String>
+            <Hint name="NumericString" value="true" />
+          </String>
+          <String value="." token="true" />
+          <String>
+            <Hint name="NumericString" value="true" />
+          </String>
+        </Block>
+      </Block>
+      <Block name="Speed" ref="RtspHeader">
+        <String name="Header" value="Speed" token="true" />
+        <!-- Defines a positive decimal value, e.g. "-1.5" -->
+        <Block name="Value">
           <String>
             <Hint name="NumericString" value="true" />
           </String>
