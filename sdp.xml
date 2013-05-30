@@ -326,6 +326,7 @@
     <String name="Type" value="z" token="true" />
     <Block name="Value">
       <Block name="AdjustmentOffset" minOccurs="1" maxOccurs="-1">
+        <String value=" " token="true" minOccurs="0" maxOccurs="1" />
         <String name="AdjustmentTime" />
         <String value=" " token="true" />
         <Choice minOccurs="0" maxOccurs="1">
