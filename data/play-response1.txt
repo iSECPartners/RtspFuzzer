@@ -4,4 +4,5 @@ Server: iSEC Partners RTSP 1.0
 Session: 14426e05;timeout=90
 Range: npt=0.000-239.800
 RTP-Info: url=rtsp://127.0.0.1/CiILENy73wIaGQkIvZG2WagdLhMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp/trackID=0;seq=45814;rtptime=627851233,url=rtsp://127.0.0.1/CiILENy73wIaGQkIvZG2WagdLhMYDSANFEgGUgZ2aWRlb3MM/0/0/0/video.3gp/trackID=1;seq=54868;rtptime=439879101
+Scale: -2.5
 
