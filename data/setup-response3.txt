@@ -1,6 +1,7 @@
 RTSP/1.0 200 OK
 CSeq: 0
 Server: iSEC Partners RTSP 1.0
+Connection: keep-alive
 Session: 14426e05;timeout=90
 Transport: RTP/AVP/TCP;unicast;destination=192.168.1.1;source=127.0.0.1;layers=9;mode="RECORD";append;interleaved=128-256;ttl=5;client_port=58526-58527;server_port=3456-3457;ssrc=8fb20e54
 Cache-Control: must-revalidate

@@ -80,7 +80,6 @@
   
   </DataModel>
   
-
   <!-- Model for the header lines in an RTSP response. -->
   <DataModel name="RtspResponseHeaders">
     <Choice minOccurs="1" maxOccurs="-1">
@@ -93,6 +92,11 @@
       <Block name="Server" ref="RtspHeader">
         <String name="Header" value="Server" token="true" />
       </Block>
+
+      <Block name="Connection" ref="RtspHeader">
+        <String name="Header" value="Connection" token="true" />
+      </Block>
+
     </Choice>
   </DataModel>
   

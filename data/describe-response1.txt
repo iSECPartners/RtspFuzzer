@@ -1,6 +1,7 @@
 RTSP/1.0 200 OK
 CSeq: 3
-Server: Google RTSP 1.0
+Server: iSEC RTSP 1.0
+Connection: keep-alive
 Content-Type: application/sdp
 Cache-Control: must-revalidate
 Date: Thu, 14 Feb 2013 03:40:03 GMT
