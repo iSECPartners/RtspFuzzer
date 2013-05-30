@@ -488,8 +488,6 @@
         <DataModel ref="PlayResponseModel" />
         <Data fileName="data/play-response1.txt" />
       </Action>
-
-      <Action type="call" method="exitProgram" publisher="Peach.Agent" />
     </State>
 
     <State name="ProcessPauseRequest">
@@ -542,9 +540,7 @@
       <Param name="CommandLine" value="##OpenRtspPath##openRTSP.exe rtsp://127.0.0.1:554/abc/def" />
       <Param name="NoCpuKill" value="true" />
       <Param name="FaultOnEarlyExit" value="false" />
-      <Param name="WaitForExitTimeout" value="4000" />
       <Param name="StartOnCall" value="launchProgram" />
-      <Param name="ExitOnCall" value="exitProgram" />
     </Monitor>
   </Agent>
 
