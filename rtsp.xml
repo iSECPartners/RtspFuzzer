@@ -58,49 +58,6 @@
     </Choice>
   </DataModel>
 
-  <!-- Model for a full RTSP request -->
-  <DataModel name="SmartRtspRequestModel">
-    <!-- The RTSP request line, such as:
-        OPTIONS rtsp://example.com RTSP/1.0 -->
-    <Block name="RequestLine">
-      <Block name="Method" ref="RtspVerb" />
-      <String value=" " type="ascii" token="true" />
-      <String name="RequestUri" />
-      <String value=" " type="ascii" token="true" />
-      <Block name="Version" ref="RtspVersion" />
-      <String value="\r\n" token="true" />
-    </Block>
-
-    <Block name="Headers">
-
-      <Block name="CSeq" ref="CSeqModel" />
-
-      <Block name="UserAgent" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="User-Agent" token="true" />
-      </Block>
-
-      <Block name="Accept" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="Accept" token="true" />
-      </Block>
-
-      <Block name="Transport" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="Transport" token="true" />
-      </Block>
-
-      <Block name="Session" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="Session" token="true" />
-      </Block>
-
-      <Block name="Range" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="Range" token="true" />
-      </Block>
-    </Block>
-    
-    <String value="\r\n" token="true" />
-
-    <Blob name="Body" minOccurs="0" maxOccurs="1" />
-  </DataModel>
-
   <DataModel name="RtspRequestModel">
     <!-- The RTSP request line, such as:
         OPTIONS rtsp://example.com RTSP/1.0 -->
