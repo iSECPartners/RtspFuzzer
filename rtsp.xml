@@ -126,15 +126,17 @@
 
   <!-- Model for the header lines in an RTSP response. -->
   <DataModel name="RtspResponseHeaders">
-    <Block name="CSeq" ref="CSeqModel" />
+    <Choice minOccurs="1" maxOccurs="-1">
+      <Block name="CSeq" ref="CSeqModel" />
 
-    <!--
-    Server banner string header, such as:
-      Server: ExampleCo RSTP 1.0
-    -->
-    <Block name="Server" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-      <String name="Header" value="Server" token="true" />
-    </Block>
+      <!--
+      Server banner string header, such as:
+        Server: ExampleCo RSTP 1.0
+      -->
+      <Block name="Server" ref="RtspHeader">
+        <String name="Header" value="Server" token="true" />
+      </Block>
+    </Choice>
   </DataModel>
   
   <!-- Model for a full RTSP response -->
