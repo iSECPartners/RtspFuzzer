@@ -535,7 +535,7 @@
     </Monitor>
   </Agent>
 
-  <Test name="QuickTimeTest">
+  <Test name="QuickTime">
     <Agent ref="QuickTimeAgent"/>
     <StateModel ref="RtspStateModel" />
 
@@ -559,7 +559,7 @@
     </Logger>
   </Test>
 
-  <Test name="VlcTest">
+  <Test name="Vlc">
     <Agent ref="VlcAgent"/>
     <StateModel ref="RtspStateModel" />
     
@@ -583,7 +583,7 @@
     </Logger>
   </Test>
 
-  <Test name="OpenRtspTest">
+  <Test name="OpenRtsp">
     <Agent ref="OpenRtspAgent"/>
     <StateModel ref="RtspStateModel" />
 
