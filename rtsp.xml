@@ -155,6 +155,9 @@
       <Block name="ContentType" ref="RtspHeader">
         <String name="Header" value="Content-Type" token="true" />
       </Block>
+      <Block name="ContentLanguage" ref="RtspHeader">
+        <String name="Header" value="Content-Language" token="true" />
+      </Block>
       <Block name="CacheControl" ref="RtspHeader">
         <String name="Header" value="Cache-Control" token="true" />
       </Block>
