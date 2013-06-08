@@ -1,4 +1,5 @@
 m=video 8093/2 RTP/AVP 98
+i=A video that explains fuzzing the RTSP protocol, directed by Michael Bay
 b=AS:50
 a=rtpmap:98 H263-2000/90000
 a=control:trackID=0
