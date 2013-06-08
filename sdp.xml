@@ -201,10 +201,10 @@
 
       <String value=" " token="true" />
 
-      <!-- TODO: Verify this. Seems like it's a bit more complicated than just a number. -->
-      <String name="MediaFormat">
-        <Hint name="NumericalString" value="true" />
-      </String>
+      <Block name="MediaFormat" minOccurs="1" maxOccurs="-1">
+        <String name="Format" />
+        <String value=" " token="true" minOccurs="0" maxOccurs="1" />
+      </Block>
     </Block>
   </DataModel>
 
