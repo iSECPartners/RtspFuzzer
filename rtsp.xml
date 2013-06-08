@@ -535,6 +535,18 @@
     </Monitor>
   </Agent>
 
+  <Agent name="WindowsMediaPlayerAgent">
+    <Monitor class="PageHeap">
+      <Param name="Executable" value="wmplayer.exe" />
+    </Monitor>
+    <Monitor class="WindowsDebugger">
+      <Param name="CommandLine" value="##WindowsMediaPlayerPath##wmplayer.exe rtsp://127.0.0.1:554/abc/def" />
+      <Param name="NoCpuKill" value="true" />
+      <Param name="FaultOnEarlyExit" value="false" />
+      <Param name="StartOnCall" value="launchProgram" />
+    </Monitor>
+  </Agent>
+
   <Test name="QuickTime">
     <Agent ref="QuickTimeAgent"/>
     <StateModel ref="RtspStateModel" />
@@ -585,6 +597,28 @@
 
   <Test name="OpenRtsp">
     <Agent ref="OpenRtspAgent"/>
+    <StateModel ref="RtspStateModel" />
+
+    <!-- Because of the size of the models in this pit, this mutator
+     causes Peach to hang for a very long time, so we exclude it. -->
+    <Mutators mode="exclude">
+      <Mutator class="ArrayVarianceMutator" />
+    </Mutators>
+
+    <Publisher name="RtspServer" class="TcpListener">
+      <Param name="Interface" value="127.0.0.1" />
+      <Param name="Port" value="554" />
+      <Param name="AcceptTimeout" value="2000" />
+      <Param name="Timeout" value="500" />
+    </Publisher>
+
+    <Logger class="logger.Filesystem">
+      <Param name="Path" value="logs" />
+    </Logger>
+  </Test>
+
+  <Test name="WindowsMediaPlayer">
+    <Agent ref="WindowsMediaPlayerAgent"/>
     <StateModel ref="RtspStateModel" />
 
     <!-- Because of the size of the models in this pit, this mutator

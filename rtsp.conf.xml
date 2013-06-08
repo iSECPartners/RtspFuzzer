@@ -2,8 +2,9 @@
 
 <PitDefines>
 	<Configuration platform="Windows">
-		<PitDefine key="VlcPath" value="C:\Program Files (x86)\VideoLAN\VLC\" />
-		<PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
-		<PitDefine key="OpenRtspPath" value="C:\OpenRtsp\testProgs\" />
+    <PitDefine key="VlcPath" value="C:\Program Files (x86)\VideoLAN\VLC\" />
+    <PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
+    <PitDefine key="OpenRtspPath" value="C:\OpenRtsp\testProgs\" />
+    <PitDefine key="WindowsMediaPlayerPath" value="C:\Program Files (x86)\Windows Media Player\" />
 	</Configuration>
 </PitDefines>
