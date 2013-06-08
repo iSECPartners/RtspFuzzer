@@ -39,7 +39,7 @@
   </DataModel>
   
   <DataModel name="BaseTimeString">
-    <String name="Value" />
+    <String name="Value" constraint="re.search(' ', value) == None" />
     <String name="Units" length="0" />
   </DataModel>
 
@@ -108,7 +108,7 @@
       <Block name="RepeatInterval" ref="TimeString" />
       <String value=" " token="true" />
       <Block name="ActiveDuration" ref="TimeString" />
-      <Block name="Offsets" minOccurs="1">
+      <Block name="Offsets" minOccurs="1" maxOccurs="-1">
         <String value=" " token="true" />
         <Block ref="TimeString" />
       </Block>
@@ -327,13 +327,13 @@
     <Block name="Value">
       <Block name="AdjustmentOffset" minOccurs="1" maxOccurs="-1">
         <String value=" " token="true" minOccurs="0" maxOccurs="1" />
-        <String name="AdjustmentTime" />
+        <String name="TimeOffset" />
         <String value=" " token="true" />
         <Choice minOccurs="0" maxOccurs="1">
           <String value="-" token="true" />
           <String value="+" token="true" />
         </Choice>
-        <Block ref="TimeString" />
+        <Block name="TimeAdjustment" ref="TimeString" />
       </Block>
     </Block>
   </DataModel>
