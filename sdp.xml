@@ -179,16 +179,12 @@
         <String name="PortNumber" constraint="value.find(' ') == -1">
           <Hint name="NumericalString" value="true" />
         </String>
-        <!--
-        TODO: There is an optional suffix defined in the spec, but it's causing parsing to
-        fail so we're commenting it out for now.
-        
         <Block name="Suffix" minOccurs="0" maxOccurs="1">
           <String value="/" token="true" />
           <String name="NumberOfPorts">
             <Hint name="NumericalString" value="true" />
           </String>
-        </Block>-->
+        </Block>
       </Block>
 
       <String value=" " token="true" />
