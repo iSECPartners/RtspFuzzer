@@ -404,7 +404,7 @@
     
   </DataModel>
   
-  <StateModel name="RtspStateModel" initialState="StartingState">
+  <StateModel name="SdpStateModel" initialState="StartingState">
     <State name="StartingState">
       <Action type="output" publisher="consolePublisher">
         <DataModel ref="SessionDescriptionModel" />
@@ -413,7 +413,7 @@
   </StateModel>
   
   <Test name="Default">
-    <StateModel ref="RtspStateModel" />
+    <StateModel ref="SdpStateModel" />
 
     <Publisher name="consolePublisher" class="stdout.Stdout" />
   </Test>
