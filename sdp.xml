@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Peach xmlns="http://peachfuzzer.com/2012/Peach" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://peachfuzzer.com/2012/Peach c:/peach3/peach.xsd"
-	author="Michael Lynch (iSEC Partners) - mlynch@isecpartners.com">
-  
+  author="Michael Lynch (iSEC Partners) - mlynch@isecpartners.com">
+
   <!--
   Definition of the SDP protocol
   The SDP protocol is defined by RFC 2327 (http://www.ietf.org/rfc/rfc2327.txt) and 
@@ -11,6 +10,11 @@
 
   <Import import="re" />
 
+  <!-- Describes a single line in an SDP description, which takes the form:
+  
+    <single letter>=<data>
+  
+  All SDP lines end with a CR LF -->
   <DataModel name="SdpLine">
     <String name="Type" length="1" />
     <String value="=" token="true" />
@@ -37,7 +41,7 @@
       <String name="Seconds" value="s" token="true" />
     </Choice>
   </DataModel>
-  
+
   <DataModel name="BaseTimeString">
     <String name="Value" constraint="re.search(' ', value) == None" />
     <String name="Units" length="0" />
@@ -71,7 +75,7 @@
       <Block ref="BaseTimeString"/>
     </Choice>
   </DataModel>
-    
+
   <!-- Start and stop time, which takes the form of:
     
       t=<start time> <stop time>
@@ -128,15 +132,13 @@
     <String name="Octet4" constraint="re.search('^[0-9]{1,3}$', value) != None" />
   </DataModel>
 
-  <Data name="SampleIPv4Address" DataModel="IPv4AddressModel">
-    <Field name="Octet1" value="192" />
-    <Field name="Octet2" value="168" />
-    <Field name="Octet3" value="1" />
-    <Field name="Octet4" value="1" />
-  </Data>
-
+  <!-- An IPv6 address, e.g.:
+  
+    2001:0db8:85a3:0000:0000:8a2e:0370:7334
+    
+    TODO: This is lazily defined, need to correct for all variants of IPv6 address
+    representations -->
   <DataModel name="IPv6AddressModel">
-    <!-- TODO: This is lazily defined, need to corect for all variants of IPv6 address representations -->
     <String name="OctetGroup1" />
     <String value=":" token="true" />
     <String name="OctetGroup2" />
@@ -154,6 +156,15 @@
     <String name="OctetGroup8" />
   </DataModel>
 
+  <!-- Specifies a media description line, which takes the form:
+  
+      m=<media> <port> <proto> <fmt> ...
+      
+  e.g.:
+  
+      m=video 8000/20 RTP/AVP 98
+  
+  -->
   <DataModel name="MediaDescriptionLineModel" ref="SdpLine">
     <String name="Type" value="m" token="true" />
 
@@ -204,6 +215,16 @@
     </Block>
   </DataModel>
 
+  <!-- Specifies the format for encryption key lines, which take the form of:
+  
+      k=<method>
+      k=<method>:<key>
+    
+    e.g.:
+    
+      k=prompt
+      k=base64:U29tZWNyYXp5c3Ryb25nU2VzczFvbkszeQ==
+    -->
   <DataModel name="EncryptionKeyModel" ref="SdpLine">
     <String name="Type" value="k" token="true" />
     <Block name="Value">
@@ -253,6 +274,12 @@
     <Block name="MediaAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="-1" />
   </DataModel>
 
+  <!-- Specifies the format for domain names, e.g.:
+  
+    www.google.com
+    isecpartners.com
+    fuzztargets.attackthis.easy.honeypot.com
+  -->
   <DataModel name="DomainNameModel">
     <String name="Host" />
     <Block name="Domains" minOccurs="0" maxOccurs="-1">
@@ -261,6 +288,15 @@
     </Block>
   </DataModel>
 
+  <!-- Specifies the origin, which takes the form of:
+  
+    o=<username> <sess-id> <sess-version> <nettype> <addrtype> <unicast-address>
+          
+  e.g.:
+  
+    o=iSECStreamer 418101510 1163399577 IN IP4 127.0.0.1
+  
+  -->
   <DataModel name="OriginatorSessionIdModel" ref="SdpLine">
     <String name="Type" value="o" token="true" />
     <Block name="Value">
@@ -289,6 +325,14 @@
     </Block>
   </DataModel>
 
+  <!-- Specifies the connection information, which takes the form:
+  
+      c=<nettype> <addrtype> <connection-address>
+      
+  e.g.:
+  
+      c=IN IP4 127.0.0.1/32
+  -->
   <DataModel name="ConnectionInfoModel" ref="SdpLine">
     <String name="Type" value="c" token="true" />
     <Block name="Value">
@@ -318,6 +362,14 @@
     </Block>
   </DataModel>
 
+  <!-- Specifies a time zone adjustment, which indicates at what time to adjust
+  for time zone differences, which takes the form:
+  
+    z=<adjustment time> <offset> <adjustment time> <offset> ....
+  
+  e.g.:
+  
+    z=2882844526 -1h 2898848070 0-->
   <DataModel name="TimeZoneAdjustmentsModel" ref="SdpLine">
     <String name="Type" value="z" token="true" />
     <Block name="Value">
@@ -334,7 +386,14 @@
     </Block>
   </DataModel>
 
+  <!-- The session description puts all the SDP attributes together into one
+  description spanning several lines. -->
   <DataModel name="SessionDescriptionModel">
+
+    <!-- Specifies the SDP protocol version, which is typically zero, e.g.
+    
+      v=0
+    -->
     <Block name="ProtocolVersion" ref="SdpLine">
       <String name="Type" value="v" token="true" />
       <String name="Value" value="0">
@@ -343,11 +402,19 @@
     </Block>
 
     <Block name="OriginatorSessionId" ref="OriginatorSessionIdModel" />
+
+    <!-- Specifies the name of the session, e.g.:
     
+      s=Awesome video stream
+    -->
     <Block name="SessionName" ref="SdpLine">
       <String name="Type" value="s" token="true" />
     </Block>
 
+    <!-- Specifies a text description of the media in the stream, e.g.:
+    
+      i=iSEC 'n Friends, Season 4, Episode 11 - "Love is Blind SQL Injection"
+    -->
     <Block name="SessionInfo" ref="SdpLine" minOccurs="0" maxOccurs="1">
       <String name="Type" value="i" token="true" />
     </Block>
@@ -373,7 +440,7 @@
     </Block>
 
     <Block name="ConnectionInfo" ref="ConnectionInfoModel" minOccurs="0" maxOccurs="1" />
-    
+
     <!-- Specifies the bandwidth information with a prefix giving bandwidth type and
     a numeric value specifying bandwidth, e.g.:
     
@@ -401,9 +468,14 @@
     <Block name="SessionAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="-1" />
 
     <Block name="MediaDescription" ref="MediaDescriptionModel" minOccurs="0" maxOccurs="-1" />
-    
+
   </DataModel>
-  
+
+  <!-- State model is only defined to print to stdout because this pit is
+  written to be imported to other pits for the SDP data models. A state model
+  could be written if there are programs that consume SDP directly (rather than
+  consuming it as a subgrammar of RTSP).
+  -->
   <StateModel name="SdpStateModel" initialState="StartingState">
     <State name="StartingState">
       <Action type="output" publisher="consolePublisher">
@@ -411,7 +483,7 @@
       </Action>
     </State>
   </StateModel>
-  
+
   <Test name="Default">
     <StateModel ref="SdpStateModel" />
 
