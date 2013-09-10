@@ -83,27 +83,6 @@
   
   </DataModel>
   
-  <!-- Model for the header lines in an RTSP response. These are the generic
-  headers that can appear in any RTSP response. -->
-  <DataModel name="RtspResponseHeaders">
-    <Choice minOccurs="1" maxOccurs="-1">
-      <Block name="CSeq" ref="CSeqModel" />
-
-      <!--
-      Server banner string header, such as:
-        Server: ExampleCo RSTP 1.0
-      -->
-      <Block name="Server" ref="RtspHeader">
-        <String name="Header" value="Server" token="true" />
-      </Block>
-
-      <Block name="Connection" ref="RtspHeader">
-        <String name="Header" value="Connection" token="true" />
-      </Block>
-
-    </Choice>
-  </DataModel>
-  
   <!-- Model for a full RTSP response -->
   <DataModel name="RtspResponseModel">
     <!--
@@ -121,75 +100,92 @@
       <String value="\r\n" token="true" />
     </Block>
 
-    <Block name="Headers" ref="RtspResponseHeaders" />
+    <Block minOccurs="1" maxOccurs="-1">
+
+      <!-- These are the generic headers that can appear in any RTSP response.-->
+      <Choice name="Headers">
+        <Block name="CSeq" ref="CSeqModel" />
+
+        <!--
+      Server banner string header, such as:
+        Server: ExampleCo RSTP 1.0
+      -->
+        <Block name="Server" ref="RtspHeader">
+          <String name="Header" value="Server" token="true" />
+        </Block>
+
+        <Block name="Connection" ref="RtspHeader">
+          <String name="Header" value="Connection" token="true" />
+        </Block>
+
+      </Choice>
+    </Block>
 
     <String value="\r\n" token="true" />
   </DataModel>
 
   <!-- Model for a RTSP response to OPTIONS request -->
   <DataModel name="OptionsResponseModel" ref="RtspResponseModel">
-    <Block name="Headers" ref="RtspResponseHeaders">
-      <!--
-      Public header line, such as:
-        Public: DESCRIBE, GET_PARAMETER, OPTIONS, PAUSE, PLAY
-        -->
-      <Block name="Public" ref="RtspHeader">
-        <String name="Header" value="Public" />
-        <Block name="Value">
+    <!--
+    Public header line, such as:
+      Public: DESCRIBE, GET_PARAMETER, OPTIONS, PAUSE, PLAY
+      -->
+    <Block name="Headers.Public" ref="RtspHeader">
+      <String name="Header" value="Public" />
+      <Block name="Value">
+        <Block ref="RtspVerb" />
+        <Block minOccurs="0" maxOccurs="8">
+          <String value=", " token="true" />
           <Block ref="RtspVerb" />
-          <Block minOccurs="0" maxOccurs="8">
-            <String value=", " token="true" />
-            <Block ref="RtspVerb" />
-          </Block>
         </Block>
       </Block>
+    </Block>
 
-      <Block name="ContentLength" ref="RtspHeader" minOccurs="0" maxOccurs="1">
-        <String name="Header" value="Content-Length" />
-        <String name="Value">
-          <Hint name="NumericalString" value="true" />
-        </String>
-      </Block>
+    <Block name="Headers.ContentLength" ref="RtspHeader">
+      <String name="Header" value="Content-Length" />
+      <String name="Value">
+        <Hint name="NumericalString" value="true" />
+      </String>
     </Block>
   </DataModel>
   
   <!-- Model for a RTSP response to DESCRIBE request -->
   <DataModel name="DescribeResponseModel" ref="RtspResponseModel">
-    <Block name="Headers" ref="RtspResponseHeaders">
-      <Block name="ContentType" ref="RtspHeader">
-        <String name="Header" value="Content-Type" token="true" />
-      </Block>
-      <Block name="ContentLanguage" ref="RtspHeader">
-        <String name="Header" value="Content-Language" token="true" />
-      </Block>
-      <Block name="ContentLocation" ref="RtspHeader">
-        <String name="Header" value="Content-Location" token="true" />
-      </Block>
-      <Block name="ContentEncoding" ref="RtspHeader">
-        <String name="Header" value="Content-Encoding" token="true" />
-      </Block>
-      <Block name="CacheControl" ref="RtspHeader">
-        <String name="Header" value="Cache-Control" token="true" />
-      </Block>
-      <Block name="Date" ref="RtspHeader">
-        <String name="Header" value="Date" token="true" />
-      </Block>
-      <Block name="Expires" ref="RtspHeader">
-        <String name="Header" value="Expires" token="true" />
-      </Block>
-      <Block name="LastModified" ref="RtspHeader">
-        <String name="Header" value="Last-Modified" token="true" />
-      </Block>
-      <Block name="ContentBase" ref="RtspHeader">
-        <String name="Header" value="Content-Base" token="true" />
-      </Block>
-      <Block name="ContentLength" ref="RtspHeader">
-        <String name="Header" value="Content-Length" token="true" />
-        <String name="Value">
-          <Relation type="size" of="Body" />
-        </String>
-      </Block>
+    <Block name="Headers.ContentType" ref="RtspHeader">
+      <String name="Header" value="Content-Type" token="true" />
     </Block>
+    <Block name="Headers.ContentLanguage" ref="RtspHeader">
+      <String name="Header" value="Content-Language" token="true" />
+    </Block>
+    <Block name="Headers.ContentLocation" ref="RtspHeader">
+      <String name="Header" value="Content-Location" token="true" />
+    </Block>
+    <Block name="Headers.ContentEncoding" ref="RtspHeader">
+      <String name="Header" value="Content-Encoding" token="true" />
+    </Block>
+    <Block name="Headers.CacheControl" ref="RtspHeader">
+      <String name="Header" value="Cache-Control" token="true" />
+    </Block>
+    <Block name="Headers.Date" ref="RtspHeader">
+      <String name="Header" value="Date" token="true" />
+    </Block>
+    <Block name="Headers.Expires" ref="RtspHeader">
+      <String name="Header" value="Expires" token="true" />
+    </Block>
+    <Block name="Headers.LastModified" ref="RtspHeader">
+      <String name="Header" value="Last-Modified" token="true" />
+    </Block>
+    <Block name="Headers.ContentBase" ref="RtspHeader">
+      <String name="Header" value="Content-Base" token="true" />
+    </Block>
+    <Block name="Headers.ContentLength" ref="RtspHeader">
+      <String name="Header" value="Content-Length" token="true" />
+      <String name="Value">
+        <Relation type="size" of="Body" />
+      </String>
+    </Block>
+    <Block name="Headers.Unknown" ref="RtspHeader" />
+    
     <Block ref="sdp:SessionDescriptionModel" name="Body" />
   </DataModel>
 
@@ -354,61 +350,57 @@
 
   <!-- Model for a RTSP response to SETUP request -->
   <DataModel name="SetupResponseModel" ref="RtspResponseModel">
-    <Block name="Headers" ref="RtspResponseHeaders">
-      <Block name="Session" ref="SessionHeaderModel" />
-      <Block name="Transport" ref="TransportHeaderModel" />
-      <Block name="CacheControl" ref="RtspHeader">
-        <String name="Header" value="Cache-Control" token="true" />
-      </Block>
-      <Block name="Date" ref="RtspHeader">
-        <String name="Header" value="Date" token="true" />
-      </Block>
-      <Block name="Expires" ref="RtspHeader">
-        <String name="Header" value="Expires" token="true" />
-      </Block>
-      <Block name="LastModified" ref="RtspHeader">
-        <String name="Header" value="Last-Modified" token="true" />
-      </Block>
+    <Block name="Headers.Session" ref="SessionHeaderModel" />
+    <Block name="Headers.Transport" ref="TransportHeaderModel" />
+    <Block name="Headers.CacheControl" ref="RtspHeader">
+      <String name="Header" value="Cache-Control" token="true" />
+    </Block>
+    <Block name="Headers.Date" ref="RtspHeader">
+      <String name="Header" value="Date" token="true" />
+    </Block>
+    <Block name="Headers.Expires" ref="RtspHeader">
+      <String name="Header" value="Expires" token="true" />
+    </Block>
+    <Block name="Headers.LastModified" ref="RtspHeader">
+      <String name="Header" value="Last-Modified" token="true" />
     </Block>
   </DataModel>
   
   <!-- Model for a RTSP response to PLAY request -->
   <DataModel name="PlayResponseModel" ref="RtspResponseModel">
-    <Block name="Headers" ref="RtspResponseHeaders">
-      <Block name="Session" ref="SessionHeaderModel" />
-      <Block name="Range" ref="RtspHeader">
-        <String name="Header" value="Range" token="true" />
-      </Block>
-      <Block name="RtpInfo" ref="RtspHeader">
-        <String name="Header" value="RTP-Info" token="true" />
-      </Block>
-      <Block name="Scale" ref="RtspHeader">
-        <String name="Header" value="Scale" token="true" />
+    <Block name="Headers.Session" ref="SessionHeaderModel" />
+    <Block name="Headers.Range" ref="RtspHeader">
+      <String name="Header" value="Range" token="true" />
+    </Block>
+    <Block name="Headers.RtpInfo" ref="RtspHeader">
+      <String name="Header" value="RTP-Info" token="true" />
+    </Block>
+    <Block name="Headers.Scale" ref="RtspHeader">
+      <String name="Header" value="Scale" token="true" />
         
-        <!-- Defines a positive or negative decimal value, e.g. "-1.5" -->
-        <Block name="Value">
-          <String value="-" token="true" minOccurs="0" maxOccurs="1" />
-          <String>
-            <Hint name="NumericString" value="true" />
-          </String>
-          <String value="." token="true" />
-          <String>
-            <Hint name="NumericString" value="true" />
-          </String>
-        </Block>
+      <!-- Defines a positive or negative decimal value, e.g. "-1.5" -->
+      <Block name="Value">
+        <String value="-" token="true" minOccurs="0" maxOccurs="1" />
+        <String>
+          <Hint name="NumericString" value="true" />
+        </String>
+        <String value="." token="true" />
+        <String>
+          <Hint name="NumericString" value="true" />
+        </String>
       </Block>
-      <Block name="Speed" ref="RtspHeader">
-        <String name="Header" value="Speed" token="true" />
-        <!-- Defines a positive decimal value, e.g. "-1.5" -->
-        <Block name="Value">
-          <String>
-            <Hint name="NumericString" value="true" />
-          </String>
-          <String value="." token="true" />
-          <String>
-            <Hint name="NumericString" value="true" />
-          </String>
-        </Block>
+    </Block>
+    <Block name="Headers.Speed" ref="RtspHeader">
+      <String name="Header" value="Speed" token="true" />
+      <!-- Defines a positive decimal value, e.g. "-1.5" -->
+      <Block name="Value">
+        <String>
+          <Hint name="NumericString" value="true" />
+        </String>
+        <String value="." token="true" />
+        <String>
+          <Hint name="NumericString" value="true" />
+        </String>
       </Block>
     </Block>
   </DataModel>
@@ -460,7 +452,7 @@
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="DescribeResponseModel" />
-        <Data fileName="data/describe-response1.txt" />
+        <Data fileName="data/describe-response-wmp2.txt" />
       </Action>
       
       <Action type="changeState" ref="RouteRequest" />

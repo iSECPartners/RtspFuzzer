@@ -390,85 +390,88 @@
   description spanning several lines. -->
   <DataModel name="SessionDescriptionModel">
 
-    <!-- Specifies the SDP protocol version, which is typically zero, e.g.
+    <Choice minOccurs="1" maxOccurs="-1">
+           
+      <!-- Specifies the SDP protocol version, which is typically zero, e.g.
     
-      v=0
-    -->
-    <Block name="ProtocolVersion" ref="SdpLine">
-      <String name="Type" value="v" token="true" />
-      <String name="Value" value="0">
-        <Hint name="NumericalString" value="true" />
-      </String>
-    </Block>
-
-    <Block name="OriginatorSessionId" ref="OriginatorSessionIdModel" />
-
-    <!-- Specifies the name of the session, e.g.:
-    
-      s=Awesome video stream
-    -->
-    <Block name="SessionName" ref="SdpLine">
-      <String name="Type" value="s" token="true" />
-    </Block>
-
-    <!-- Specifies a text description of the media in the stream, e.g.:
-    
-      i=iSEC 'n Friends, Season 4, Episode 11 - "Love is Blind SQL Injection"
-    -->
-    <Block name="SessionInfo" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="i" token="true" />
-    </Block>
-
-    <Block name="SessionDescriptionUri" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="u" token="true" />
-    </Block>
-
-    <!-- Specifies an email address, e.g.:
-    
-      e=j.doe@example.com (Jane Doe) -->
-    <Block name="EmailAddress" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="e" token="true" />
-    </Block>
-
-    <!-- Specifies a phone number, e.g.:
-    
-      p=+1 617 555-6011
-      
-      Note that the formatting is a suggestion and is not mandated by the spec. -->
-    <Block name="PhoneNumber" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="p" token="true" />
-    </Block>
-
-    <Block name="ConnectionInfo" ref="ConnectionInfoModel" minOccurs="0" maxOccurs="1" />
-
-    <!-- Specifies the bandwidth information with a prefix giving bandwidth type and
-    a numeric value specifying bandwidth, e.g.:
-    
-      b=CT:128 -->
-    <Block name="BandwidthInfo" ref="SdpLine" minOccurs="0" maxOccurs="1">
-      <String name="Type" value="b" token="true" />
-      <Block name="Value">
-        <Choice name="ConnectionType">
-          <String name="ConferenceTotal" value="CT" token="true" />
-          <String name="ApplicationSpecific" value="AS" token="true" />
-        </Choice>
-        <String value=":" token="true" />
-        <String name="Bandwidth" />
+        v=0
+      -->
+      <Block name="ProtocolVersion" ref="SdpLine">
+        <String name="Type" value="v" token="true" />
+        <String name="Value" value="0">
+          <Hint name="NumericalString" value="true" />
+        </String>
       </Block>
-    </Block>
 
-    <Block name="TimingInfo" ref="TimingInfoModel" />
+      <Block name="OriginatorSessionId" ref="OriginatorSessionIdModel" />
 
-    <Block name="RepeatTime" ref="RepeatTimeModel" minOccurs="0" maxOccurs="1" />
+      <!-- Specifies the name of the session, e.g.:
+    
+        s=Awesome video stream
+      -->
+      <Block name="SessionName" ref="SdpLine">
+        <String name="Type" value="s" token="true" />
+      </Block>
 
-    <Block name="TimeZoneAdjustments" ref="TimeZoneAdjustmentsModel" minOccurs="0" maxOccurs="1" />
+      <!-- Specifies a text description of the media in the stream, e.g.:
+    
+        i=iSEC 'n Friends, Season 4, Episode 11 - "Love is Blind SQL Injection"
+      -->
+      <Block name="SessionInfo" ref="SdpLine">
+        <String name="Type" value="i" token="true" />
+      </Block>
 
-    <Block name="EncryptionKey" ref="EncryptionKeyModel" minOccurs="0" maxOccurs="1" />
+      <Block name="SessionDescriptionUri" ref="SdpLine">
+        <String name="Type" value="u" token="true" />
+      </Block>
 
-    <Block name="SessionAttribute" ref="AttributeLine" minOccurs="0" maxOccurs="-1" />
+      <!-- Specifies an email address, e.g.:
+    
+        e=j.doe@example.com (Jane Doe) -->
+      <Block name="EmailAddress" ref="SdpLine">
+        <String name="Type" value="e" token="true" />
+      </Block>
 
-    <Block name="MediaDescription" ref="MediaDescriptionModel" minOccurs="0" maxOccurs="-1" />
+      <!-- Specifies a phone number, e.g.:
+    
+        p=+1 617 555-6011
+      
+        Note that the formatting is a suggestion and is not mandated by the spec. -->
+      <Block name="PhoneNumber" ref="SdpLine">
+        <String name="Type" value="p" token="true" />
+      </Block>
 
+      <Block name="ConnectionInfo" ref="ConnectionInfoModel" />
+
+      <!-- Specifies the bandwidth information with a prefix giving bandwidth type and
+      a numeric value specifying bandwidth, e.g.:
+    
+        b=CT:128 -->
+      <Block name="BandwidthInfo" ref="SdpLine">
+        <String name="Type" value="b" token="true" />
+        <Block name="Value">
+          <Choice name="ConnectionType">
+            <String name="ConferenceTotal" value="CT" token="true" />
+            <String name="ApplicationSpecific" value="AS" token="true" />
+          </Choice>
+          <String value=":" token="true" />
+          <String name="Bandwidth" />
+        </Block>
+      </Block>
+
+      <Block name="TimingInfo" ref="TimingInfoModel" />
+
+      <Block name="RepeatTime" ref="RepeatTimeModel" />
+
+      <Block name="TimeZoneAdjustments" ref="TimeZoneAdjustmentsModel" />
+
+      <Block name="EncryptionKey" ref="EncryptionKeyModel" />
+
+      <Block name="SessionAttribute" ref="AttributeLine" />
+
+      <Block name="MediaDescription" ref="MediaDescriptionModel" />
+      
+    </Choice>
   </DataModel>
 
   <!-- State model is only defined to print to stdout because this pit is
