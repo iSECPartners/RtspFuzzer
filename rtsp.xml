@@ -452,7 +452,7 @@
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="DescribeResponseModel" />
-        <Data fileName="data/describe-response-wmp2.txt" />
+        <Data fileName="data/describe-response1.txt" />
       </Action>
       
       <Action type="changeState" ref="RouteRequest" />
@@ -530,7 +530,7 @@
       <Param name="Executable" value="openRTSP.exe" />
     </Monitor>
     <Monitor class="WindowsDebugger">
-      <Param name="CommandLine" value="##OpenRtspPath##openRTSP.exe rtsp://127.0.0.1:554/abc/def" />
+      <Param name="CommandLine" value="##OpenRtspPath##openRTSP.exe rtsp://127.0.0.1:554/foo/bar.mp4" />
       <Param name="NoCpuKill" value="true" />
       <Param name="FaultOnEarlyExit" value="false" />
       <Param name="StartOnCall" value="launchProgram" />
@@ -542,7 +542,7 @@
       <Param name="Executable" value="wmplayer.exe" />
     </Monitor>
     <Monitor class="WindowsDebugger">
-      <Param name="CommandLine" value="##WindowsMediaPlayerPath##wmplayer.exe rtsp://127.0.0.1:554/abc/def" />
+      <Param name="CommandLine" value="##WindowsMediaPlayerPath##wmplayer.exe rtsp://127.0.0.1:554/foo/bar.mp4" />
       <Param name="NoCpuKill" value="true" />
       <Param name="FaultOnEarlyExit" value="false" />
       <Param name="StartOnCall" value="launchProgram" />
