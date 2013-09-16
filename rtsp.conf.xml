@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <PitDefines>
-	<Configuration platform="Windows">
-		<PitDefine key="VlcPath" value="C:\Program Files (x86)\VideoLAN\VLC\" />
-		<PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
-		<PitDefine key="OpenRtspPath" value="D:\live20121218\testProgs\" />
-                <PitDefine key="WindowsMediaPlayerPath" value="C:\Program Files (x86)\Windows Media Player\" />
-	</Configuration>
+  <Configuration platform="Windows">
+    <PitDefine key="VlcPath" value="C:\Program Files (x86)\VideoLAN\VLC\" />
+    <PitDefine key="QuickTimePath" value="C:\Program Files (x86)\QuickTime\" />
+    <PitDefine key="OpenRtspPath" value="C:\OpenRtsp\testProgs\" />
+    <PitDefine key="WindowsMediaPlayerPath" value="C:\Program Files (x86)\Windows Media Player\" />
+  </Configuration>
 </PitDefines>
