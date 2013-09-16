@@ -310,14 +310,14 @@
       <Block name="ModeBlock">
         <String value="mode" token="true" />
         <String value="=" token="true" />
-        <String value="&quot;" token="true" />
+        <String value="&quot;" token="true" minOccurs="0" maxOccurs="1" />
         <Choice>
           <String value="play" token="true" />
           <String value="record" token="true" />
           <String value="PLAY" token="true" />
           <String value="RECORD" token="true" />
         </Choice>
-        <String value="&quot;" token="true" />
+        <String value="&quot;" token="true" minOccurs="0" maxOccurs="1" />
       </Block>
     </Choice>
   </DataModel>
