@@ -36,3 +36,11 @@ peach --definedvalues=rtsp.conf.xml rtsp.xml Vlc
 <pre>
 peach --definedvalues=rtsp.conf.xml rtsp.xml OpenRtsp
 </pre>
+
+## Fuzzing Other Clients
+
+See the [wiki](https://github.com/iSECPartners/RtspFuzzer/wiki/Fuzzing-a-new-RTSP-client) for information about fuzzing a non-built-in RTSP client implementation.
+
+## Gotchas
+
+Review the [wiki](https://github.com/iSECPartners/RtspFuzzer/wiki/Gotchas) for common issues that may arise when using RtspFuzzer.
