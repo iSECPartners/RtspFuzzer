@@ -17,8 +17,6 @@ This fuzzes programs that implement the RTSP client functionality. It fuzzes the
 
 The RtspFuzzer is pre-configured to fuzz several common implementations of RTSP.
 
-Fuzzing a different program is simple and easy. Take a look at the Test and Agent elements in rtsp.xml and copy a pair and replace the binary name with your own target binary.
-
 ### QuickTime
 
 <pre>
