@@ -392,7 +392,7 @@
     </Block>
     <Block name="Headers.Speed" ref="RtspHeader">
       <String name="Header" value="Speed" token="true" />
-      <!-- Defines a positive decimal value, e.g. "-1.5" -->
+      <!-- Defines a positive decimal value, e.g. "1.5" -->
       <Block name="Value">
         <String>
           <Hint name="NumericString" value="true" />
