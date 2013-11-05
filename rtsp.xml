@@ -7,7 +7,7 @@
   Fuzzer for RTSP clients.
   The RTSP protocol is defined as RFC 2326 (http://www.ietf.org/rfc/rfc2326.txt).
   -->
-  
+
   <!-- Import the definition of SDP, which is used in DESCRIBE responses -->
   <Include ns="sdp" src="file:sdp.xml" />
 
@@ -44,6 +44,8 @@
     </String>
   </DataModel>
 
+  <!-- The RTSP request line, such as:
+        OPTIONS rtsp://example.com RTSP/1.0 -->
   <DataModel name="RtspVerb">
     <Choice name="VerbChoice">
       <String name="Describe" value="DESCRIBE" token="true" />
@@ -57,32 +59,65 @@
     </Choice>
   </DataModel>
 
+  <DataModel name="RtspRequestLine">
+    <Block name="Method" ref="RtspVerb" />
+    <String value=" " type="ascii" token="true" />
+    <String name="RequestUri" />
+    <String value=" " type="ascii" token="true" />
+    <Block name="Version" ref="RtspVersion" />
+    <String value="\r\n" token="true" />
+  </DataModel>
+
   <!-- Describes a client RTSP request.
   It defines the bare minimum of the request because defining it with more
   granularity can cause Peach to fail to crack the data or take too long
   to crack it.-->
-  <DataModel name="RtspRequestModel">
-    <!-- The RTSP request line, such as:
-        OPTIONS rtsp://example.com RTSP/1.0 -->
-    <Block name="RequestLine">
-      <Block name="Method" ref="RtspVerb" />
-      <String value=" " type="ascii" token="true" />
-      <String name="RequestUri" />
-      <String value=" " type="ascii" token="true" />
-      <Block name="Version" ref="RtspVersion" />
-      <String value="\r\n" token="true" />
+  <DataModel name="RtspRequestModelSimple">
+    <Block name="RequestLine" ref="RtspRequestLine" />
+
+    <String />
+
+    <Block name="Headers">
+      <Block name="CSeq" ref="CSeqModel" />
     </Block>
 
     <String />
-    
-    <Block name="Headers">
-      <Block name="CSeq" ref="CSeqModel" />  
-    </Block>
-    
-    <String />
-  
+
   </DataModel>
-  
+
+  <!-- Describes a client RTSP request.
+  This is similar to RtspRequestModel, but defines a request more granularly for
+  the purposes of mutating requests to send, rather than interpreting requests
+  received by the client under test. -->
+  <DataModel name="RtspRequestModel">
+    <Block name="RequestLine" ref="RtspRequestLine" />
+
+    <Block minOccurs="1" maxOccurs="-1">
+      <Choice name="Headers">
+        <Block name="CSeq" ref="CSeqModel" />
+
+        <Block name="Unknown" ref="RtspHeader" />
+      </Choice>
+    </Block>
+
+    <String value="\r\n" token="true" />
+
+    <String name="Body" />
+
+  </DataModel>
+
+  <!-- Data model for the GET_PARAMETER request -->
+  <DataModel name="GetParameterRequestModel" ref="RtspRequestModel">
+
+    <Block name="Headers.ContentLength" ref="RtspHeader">
+      <String name="Header" value="Content-Length" token="true" />
+      <String name="Value">
+        <Relation type="size" of="Body" />
+      </String>
+    </Block>
+
+  </DataModel>
+
   <!-- Model for a full RTSP response -->
   <DataModel name="RtspResponseModel">
     <!--
@@ -148,7 +183,7 @@
       </String>
     </Block>
   </DataModel>
-  
+
   <!-- Model for a RTSP response to DESCRIBE request -->
   <DataModel name="DescribeResponseModel" ref="RtspResponseModel">
     <Block name="Headers.ContentType" ref="RtspHeader">
@@ -185,7 +220,7 @@
       </String>
     </Block>
     <Block name="Headers.Unknown" ref="RtspHeader" />
-    
+
     <Block ref="sdp:SessionDescriptionModel" name="Body" />
   </DataModel>
 
@@ -365,7 +400,7 @@
       <String name="Header" value="Last-Modified" token="true" />
     </Block>
   </DataModel>
-  
+
   <!-- Model for a RTSP response to PLAY request -->
   <DataModel name="PlayResponseModel" ref="RtspResponseModel">
     <Block name="Headers.Session" ref="SessionHeaderModel" />
@@ -377,7 +412,7 @@
     </Block>
     <Block name="Headers.Scale" ref="RtspHeader">
       <String name="Header" value="Scale" token="true" />
-        
+
       <!-- Defines a positive or negative decimal value, e.g. "-1.5" -->
       <Block name="Value">
         <String value="-" token="true" minOccurs="0" maxOccurs="1" />
@@ -404,7 +439,7 @@
       </Block>
     </Block>
   </DataModel>
-  
+
   <StateModel name="RtspStateModel" initialState="StartingState">
     <State name="StartingState">
 
@@ -414,15 +449,24 @@
       <Action type="call" method="launchProgram" publisher="Peach.Agent" />
 
       <Action type="accept" publisher="RtspServer" />
-      
+
       <Action type="changeState" ref="RouteRequest" />
     </State>
-    
+
+    <!-- This state is currently unused but can be used for sending a GET_PARAMETER
+    request to a client. -->
+    <State name="PerformGetParameterRequest">
+      <Action name="SendGetParameterRequest" type="output" publisher="RtspServer">
+        <DataModel ref="GetParameterRequestModel" />
+        <Data fileName="data/get-parameter-request.txt" />
+      </Action>
+    </State>
+
     <State name="RouteRequest">
-      
+
       <!-- Wait for client to send data. -->
       <Action name="ReceiveClientRequest" type="input" publisher="RtspServer">
-        <DataModel ref="RtspRequestModel" />
+        <DataModel ref="RtspRequestModelSimple" />
       </Action>
 
       <Action type="changeState" ref="ProcessOptionsRequest" when="str(getattr(StateModel.states['RouteRequest'].actions[0].dataModel.find('RequestLine.Method.VerbChoice.Options'), 'DefaultValue', None)) == 'OPTIONS'" />
@@ -435,33 +479,33 @@
     <State name="ProcessOptionsRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
-      
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+
       <Action name="SendClientResponse" type="output" publisher="RtspServer">
         <DataModel ref="OptionsResponseModel" />
         <Data fileName="data/options-response1.txt" />
       </Action>
-      
+
       <Action type="changeState" ref="RouteRequest" />
     </State>
-    
+
     <State name="ProcessDescribeRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="DescribeResponseModel" />
         <Data fileName="data/describe-response1.txt" />
       </Action>
-      
+
       <Action type="changeState" ref="RouteRequest" />
     </State>
 
     <State name="ProcessSetupRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="SetupResponseModel" />
@@ -474,7 +518,7 @@
     <State name="ProcessPlayRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
 
       <!-- Send a fuzzed response to client -->
       <Action type="output" publisher="RtspServer">
@@ -486,7 +530,7 @@
     <State name="ProcessPauseRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModel//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
 
       <!-- Send a fuzzed response to client -->
       <Action type="output" publisher="RtspServer">
@@ -496,7 +540,7 @@
 
       <Action type="changeState" ref="RouteRequest" />
     </State>
-    
+
   </StateModel>
 
   <Agent name="QuickTimeAgent">
@@ -576,7 +620,7 @@
   <Test name="Vlc">
     <Agent ref="VlcAgent"/>
     <StateModel ref="RtspStateModel" />
-    
+
     <!-- Because of the size of the models in this pit, this mutator
      causes Peach to hang for a very long time, so we exclude it. -->
     <Mutators mode="exclude">
@@ -640,5 +684,5 @@
       <Param name="Path" value="logs" />
     </Logger>
   </Test>
-  
+
 </Peach>
