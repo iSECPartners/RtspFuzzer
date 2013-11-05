@@ -517,7 +517,7 @@
       <Param name="Executable" value="vlc.exe" />
     </Monitor>
     <Monitor class="WindowsDebugger">
-      <Param name="CommandLine" value="##VlcPath##vlc.exe rtsp://127.0.0.1:554/foo/bar.mp4" />
+      <Param name="CommandLine" value="##VlcPath##vlc.exe -I dummy rtsp://127.0.0.1:554/foo/bar.mp4" />
       <Param name="NoCpuKill" value="true" />
       <Param name="FaultOnEarlyExit" value="true" />
       <Param name="WaitForExitTimeout" value="0" />
