@@ -71,11 +71,7 @@ namespace EvilRtspServer
                             string currentResponse = responses[i];
                             Console.WriteLine(currentResponse);
                             sw.Write(currentResponse);
-                            for (int k = 0; k < 8000; k++ )
-                            {
-                                sw.Write('A');
-                            }
-                                sw.Flush();
+                            sw.Flush();
                         }
                     }
                 }
