@@ -1,0 +1,6 @@
+SET_PARAMETER rtsp://127.0.0.1/foo/bar.mp4 RTSP/1.0
+CSeq: 8001
+Content-Type: text/parameters
+Content-Length: 18
+
+fooparam: barvalue

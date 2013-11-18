@@ -106,6 +106,13 @@
 
   </DataModel>
 
+  <!-- Data model for the OPTIONS request -->
+  <DataModel name="OptionsRequestModel" ref="RtspRequestModel">
+    <Block name="Headers.UserAgent" ref="RtspHeader">
+      <String name="Header" value="User-Agent" token="true" />
+    </Block>
+  </DataModel>
+
   <!-- Data model for the GET_PARAMETER request -->
   <DataModel name="GetParameterRequestModel" ref="RtspRequestModel">
 
@@ -114,6 +121,22 @@
       <String name="Value">
         <Relation type="size" of="Body" />
       </String>
+    </Block>
+
+  </DataModel>
+
+  <!-- Data model for the SET_PARAMETER request -->
+  <DataModel name="SetParameterRequestModel" ref="RtspRequestModel">
+
+    <Block name="Headers.ContentLength" ref="RtspHeader">
+      <String name="Header" value="Content-Length" token="true" />
+      <String name="Value">
+        <Relation type="size" of="Body" />
+      </String>
+    </Block>
+    <Block name="Headers.ContentType" ref="RtspHeader">
+      <String name="Header" value="Content-Type" token="true" />
+      <String name="Value" value="text/parameters" token="true" />
     </Block>
 
   </DataModel>
@@ -524,6 +547,24 @@
       <Action type="output" publisher="RtspServer">
         <DataModel ref="PlayResponseModel" />
         <Data fileName="data/play-response1.txt" />
+      </Action>
+      
+      <!-- Send a fuzzed OPTIONS request to client -->
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="OptionsRequestModel" />
+        <Data fileName="data/options-request1.txt" />
+      </Action>
+
+      <!-- Send a fuzzed GET_PARAMETER request to client -->
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="GetParameterRequestModel" />
+        <Data fileName="data/get-parameter-request.txt" />
+      </Action>
+
+      <!-- Send a fuzzed SET_PARAMETER request to client -->
+      <Action type="output" publisher="RtspServer">
+        <DataModel ref="SetParameterRequestModel" />
+        <Data fileName="data/set-parameter-request1.txt" />
       </Action>
     </State>
 

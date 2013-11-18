@@ -1,4 +1,4 @@
 OPTIONS rtsp://127.0.0.1:554/foo/bar.mp4 RTSP/1.0
-CSeq: 2
-User-Agent: LibVLC/2.1.0-git (LIVE555 Streaming Media v2011.12.23)
+CSeq: 8000
+User-Agent: iSEC Partners Fuzzing RTSP Server v1.0
 
