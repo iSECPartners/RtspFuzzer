@@ -502,7 +502,7 @@
     <State name="ProcessOptionsRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//OptionsResponseModel//Headers//CSeq//Value" />
 
       <Action name="SendClientResponse" type="output" publisher="RtspServer">
         <DataModel ref="OptionsResponseModel" />
@@ -515,7 +515,7 @@
     <State name="ProcessDescribeRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//DescribeResponseModel//Headers//CSeq//Value" />
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="DescribeResponseModel" />
@@ -528,7 +528,7 @@
     <State name="ProcessSetupRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//SetupResponseModel//Headers//CSeq//Value" />
 
       <Action type="output" publisher="RtspServer">
         <DataModel ref="SetupResponseModel" />
@@ -541,7 +541,7 @@
     <State name="ProcessPlayRequest">
 
       <!-- Grab the CSeq number from the requst and apply it to the response -->
-      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//CSeq//Value" />
+      <Action type="slurp" valueXpath="//RouteRequest//ReceiveClientRequest//RtspRequestModelSimple//Headers//CSeq//Value" setXpath="//PlayResponseModel//Headers//CSeq//Value" />
 
       <!-- Send a fuzzed response to client -->
       <Action type="output" publisher="RtspServer">

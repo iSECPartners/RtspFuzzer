@@ -1,5 +1,5 @@
 GET_PARAMETER rtsp://127.0.0.1/foo/bar.mp4 RTSP/1.0
-CSeq: 9
+CSeq: 9000
 Content-Type: text/parameters
 Session: 12345678
 Content-Length: 24
