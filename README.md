@@ -13,6 +13,12 @@ This fuzzes programs that implement the RTSP client functionality. It fuzzes the
 * PLAY
 * PAUSE
 
+It also fuzzes the following server -> client requests:
+
+* OPTIONS
+* GET_PARAMETER
+* SET_PARAMETER
+
 ## To Run
 
 The RtspFuzzer is pre-configured to fuzz several common implementations of RTSP.
