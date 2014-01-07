@@ -95,8 +95,6 @@
     <Block minOccurs="1" maxOccurs="-1">
       <Choice name="Headers">
         <Block name="CSeq" ref="CSeqModel" />
-
-        <Block name="Unknown" ref="RtspHeader" />
       </Choice>
     </Block>
 
@@ -122,6 +120,7 @@
         <Relation type="size" of="Body" />
       </String>
     </Block>
+    <Block name="Headers.Unknown" ref="RtspHeader" />
 
   </DataModel>
 
@@ -138,6 +137,7 @@
       <String name="Header" value="Content-Type" token="true" />
       <String name="Value" value="text/parameters" token="true" />
     </Block>
+    <Block name="Headers.Unknown" ref="RtspHeader" />
 
   </DataModel>
 
