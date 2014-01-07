@@ -19,8 +19,12 @@ def collectResponses(sourceDirectory):
     responseFiles = []
 
     for pathname in os.listdir(sourceDirectory):
-        if pathname.endswith(".txt") and (pathname.find("_Output_") != -1):
-            responseFiles.append(pathname)
+        pathParts = pathname.split(".")
+        if pathParts[-1] != "bin":
+            continue
+        if (int(pathParts[0]) % 2 != 0):
+            continue
+        responseFiles.append(pathname)
 
     for responseFile in responseFiles:
         fullPath = os.path.join(sourceDirectory, responseFile)
