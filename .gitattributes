@@ -1,0 +1,5 @@
+* text=auto
+
+# Do not allow git to modify *.txt files, as this affects cracking
+# of files in the data directory.
+*.txt binary
